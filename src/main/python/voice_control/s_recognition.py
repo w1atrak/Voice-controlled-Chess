@@ -1,4 +1,5 @@
 # from .file import function
+# git push -u origin <branch>
 
 import speech_recognition as sr
 import difflib
@@ -24,10 +25,11 @@ def extractMove(results: dict):
             if re.match(r'([a-h][1-8])|([a-h]-[1-8])', word):
                 if not startPos:
                     startPos = word
-                else:
-                    endPos = word
-
-    print(max(matchingPieces, key=matchingPieces.get), startPos, endPos)
+                elif not endPos:
+                    endPos = word   
+    print(results)
+    print(max(matchingPieces, key=matchingPieces.get), startPos + endPos)
+    return [max(matchingPieces, key=matchingPieces.get), startPos + ' ' + endPos]
 
 
 def recognizeSpeech():
