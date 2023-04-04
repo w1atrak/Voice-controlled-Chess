@@ -1,7 +1,7 @@
 
 import speech_recognition as sr
 import re
-from s_synthesis import speak
+from voice_control.s_synthesis import speak
 
 # git push -u origin <branch>
 
@@ -38,11 +38,10 @@ def extractMove(results, savedMatchings = {}):
                 "przelot", "przelocie", 
                 "bicie", "biję", "bije", 
                 "szach", 
-                "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]
-    # pieces = ["pionek", "pion","wieża", "skoczek", "goniec", "hetman", "król"]
-    # roszadaWords = ["krótka", "długa"]                 #
+                "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]                                  #   # roszadaWords = ["krótka", "długa"]                 #
     promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
-
+    pieces = ["pionek", "pion", "wieża", "skoczek", "goniec", "hetman", "król"]
+    
     matchings = {x: 0 for x in keyWords}
 
     for word in savedMatchings:
@@ -51,6 +50,7 @@ def extractMove(results, savedMatchings = {}):
 
     positions = ''
     positionsInterpreted = -1
+    mainPiece = None
     
     for result in results['alternative']:
 
@@ -64,7 +64,10 @@ def extractMove(results, savedMatchings = {}):
             if word in keyWords: 
                 matchings[word] += 1
             
-            if re.match(r'([a-h][1-8])', word):
+            if word in pieces and not mainPiece:
+                mainPiece = word
+            
+            if re.match(r'(^[a-h][1-8]$)', word):
                 if not startPos:
                     startPos = word
                 elif not endPos:
@@ -83,7 +86,7 @@ def extractMove(results, savedMatchings = {}):
 
         
 #
-    if matchings['roszada']  :
+    if matchings['roszada']  :    ################## roszadę
         if matchings['krótka']  :
             # roszada krótka
             speak("roszada krótka")
@@ -124,12 +127,15 @@ def extractMove(results, savedMatchings = {}):
             speak("Doprecyzuj na co promować")
             extractMove( recognizeSpeech(), ["promowanie"])
 
-    else:
+    elif positions:
     # sprawdzenie możliwych ruchów ze względu na pozycje
         speak(positions)
 
+# 
+    else:
+        speak("nie rozpoznano ruchu")
 
-
+    print(positions)
     return None
 
 
@@ -140,24 +146,16 @@ def extractMove(results, savedMatchings = {}):
 
 def recognizeSpeech():
 
-    while True:
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            r.adjust_for_ambient_noise(source,duration=0.3)
-            print("Say something!")
-            audio = r.listen(source)
-
-        try:
-            return r.recognize_google(audio, language='pl_PL', show_all=True)
-
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print("Could not request results from Google Speech Recognition service; {0}".format(e))
-
-
-extractMove( recognizeSpeech())
-
-
-
+    r = sr.Recognizer()
+    print(sr.Microphone())
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+        print("Say something!")
+        audio = r.listen(source)
+    try:
+        return r.recognize_google(audio, language='pl_PL', show_all=True)
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand audio")
+    except sr.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
