@@ -6,7 +6,7 @@ from chess.player import Player
 class AIPlayer(Player):
     def make_move(self, board):
         _, move = self.minimax(board, 1, float('-inf'), float('inf'), True)
-        board.move_piece(*move)
+        board.make_move(*move)
         return move
 
     def minimax(self, board, depth, alpha, beta, maximizing_player):
@@ -17,7 +17,7 @@ class AIPlayer(Player):
             for move in self.get_legal_moves(board):
                 new_board = Board()
                 new_board.board = copy.copy(board.board)
-                new_board.move_piece(*move)
+                new_board.make_move(*move)
                 eval_value, _ = self.minimax(new_board, depth - 1, alpha, beta, False)
                 if eval_value > max_eval:
                     max_eval = eval_value
@@ -32,7 +32,7 @@ class AIPlayer(Player):
             for move in self.get_opponent_legal_moves(board):
                 new_board = Board()
                 new_board.board = copy.copy(board.board)
-                new_board.move_piece(*move)
+                new_board.make_move(*move)
                 eval_value, _ = self.minimax(new_board, depth - 1, alpha, beta, True)
                 if eval_value < min_eval:
                     min_eval = eval_value

@@ -4,7 +4,8 @@ class Piece:
         self.color = color
 
     def __str__(self):
+        char = 'n' if self.piece_type == 'knight' else self.piece_type[0]
         if self.color == 'white':
-            return self.piece_type[0].upper()
+            return char.upper()
         else:
-            return self.piece_type[0].lower()
+            return char.lower()

@@ -5,6 +5,8 @@ from chess.random_ai_player import RandomAIPlayer
 from chess.game_rules import GameRules
 from chess.gui import ChessGUI
 
+from voice_control.s_recognition import *
+
 def main():
     board = Board()
     player1 = Player('white')
@@ -15,6 +17,7 @@ def main():
     while not game_over:
         print(board)
         move = input("Podaj swój ruch (np. 'e2 e4'): ")
+        #move = extractMove(recognizeSpeech())
         start_position, end_position = parse_move(move)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
