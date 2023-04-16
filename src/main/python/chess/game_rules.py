@@ -1,3 +1,6 @@
+from chess.piece import Piece
+
+
 class GameRules:
     @staticmethod
     def is_path_clear(start_position, end_position, board):
@@ -55,6 +58,31 @@ class GameRules:
             return GameRules.is_valid_knight_move(piece, start_position, end_position, board)
 
         return False
+    
+    @staticmethod
+    def parse_str_position(position_str):
+        position = (8 - int(position_str[1]), ord(position_str[0]) - ord('a'))
+        return position
+
+
+    @staticmethod
+    def parse_tuple_position(position_tuple):
+        position = chr(position_tuple[1] + ord('a')) + str(8 - position_tuple[0])
+        return position
+
+    @staticmethod
+    def available_moves(piece, position, board):
+        if piece:
+            piece = Piece(piece, 'white')
+
+        moves = []
+        for row in range(8):
+            for col in range(8):
+                piece_at_position = board.get_piece((row, col))
+                if (not piece and piece_at_position)  or (piece_at_position and piece.color == piece_at_position.color and piece_at_position.piece_type == piece.piece_type):
+                    if GameRules.is_valid_move(piece_at_position, (row,col), GameRules.parse_str_position(position), board):
+                        moves.append((row, col))
+        return moves
 
     @staticmethod
     def is_valid_pawn_move(piece, start_position, end_position, board):

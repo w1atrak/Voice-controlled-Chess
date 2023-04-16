@@ -1,7 +1,8 @@
 
 import speech_recognition as sr
 import re
-from s_synthesis import speak
+from voice_control.s_synthesis import speak
+from chess.game_rules import *
 
 # git push -u origin <branch>
 
@@ -28,18 +29,23 @@ def cutSpaces(result):
 
 
 
-def extractMove(results, savedMatchings = {}): 
+def extractMove(results, board, savedMatchings = {}): 
     if not results or not results['alternative']:
         return None
     
 
-    keyWords = ["pionek", "pion", "wieża", "wieżę", "skoczek", "skoczka", "goniec", "gońca", "hetman", "hetmana", "król", 
+    keyWords = ["pionek", "pion", 
+                "wieża", "wieżę", 
+                "skoczek", "skoczka", 
+                "goniec", "gońca", 
+                "hetman", "hetmana", 
+                "król", 
                 "roszada", "krótka", "długa", 
                 "przelot", "przelocie", 
                 "bicie", "biję", "bije", 
                 "szach", 
                 "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]
-    # pieces = ["pionek", "pion","wieża", "skoczek", "goniec", "hetman", "król"]
+    pieces = ["pionek", "pion","wieża", "skoczek", "goniec", "hetman", "król"]
     # roszadaWords = ["krótka", "długa"]                 #
     promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
 
@@ -78,43 +84,78 @@ def extractMove(results, savedMatchings = {}):
             positionsInterpreted = 1
         elif not startPos:
             positionsInterpreted = 0
+    # piecesWords = ["pionek", "pion", "wieża", "wieżę", "skoczek", "skoczka", "goniec", "gońca", "hetman", "hetmana", "król"]
 
 
+    piece = ""
+    if matchings["pionek"] > 0 or matchings["pion"] > 0:
+        piece = "pawn"
+    elif matchings["wieża"] > 0 or matchings["wieżę"] > 0:
+        piece = "rook"
+    elif matchings["skoczek"] > 0 or matchings["skoczka"] > 0:
+        piece = "knight"
+    elif matchings["goniec"] > 0 or matchings["gońca"] > 0:
+        piece = "bishop"
+    elif matchings["hetman"] > 0 or matchings["hetmana"] > 0:
+        piece = "queen"
+    elif matchings["król"] > 0:
+        piece = "king"
 
         
 #
-    if matchings['roszada']  :
-        if matchings['krótka']  :
-            # roszada krótka
-            speak("roszada krótka")
-        elif matchings['długa']  :
-            # roszada długa
-            speak("roszada długa")
-        else:
-            speak("za mało danych o roszadzie")
-            # czy jakakolwiek możliwa
+    if matchings['roszada']:
+        if board.king_made_move or ( board.left_rook_made_move and board.right_rook_made_move ):
+            speak("roszada nie jest możliwa")
+            return extractMove(recognizeSpeech(), board)
+        
+        rightCastlingPossible = not board.right_rook_made_move and GameRules.is_path_clear((7,5),(7,6),board)
+        leftCastlingPossible = not board.left_rook_made_move and GameRules.is_path_clear((7,3),(7,1),board)
+
+        if matchings['krótka']:
+            if not rightCastlingPossible:
+                speak("roszada krótka nie jest możliwa")
+                return extractMove(recognizeSpeech(), board)    
+            else:
+                return "e1 g1"
             
-# 
+        if matchings['długa']:
+            if not leftCastlingPossible:
+                speak("roszada długa nie jest możliwa")
+                return extractMove(recognizeSpeech(), board)
+            else:
+                return "e1 c1"
+            
+        if leftCastlingPossible:
+            speak("roszada długa")
+            return "e1 c1"
+        elif rightCastlingPossible:
+            speak("roszada krótka")
+            return "e1 g1"
+
+        else:
+            speak("roszada nie jest możliwa")
+            
+#TODO
     elif matchings['przelot']   or matchings['przelocie']  :
         speak("bicie w przelocie")
         # czy jakakolwiek możliwa z ewentualnymi pozycjami
 
-#
+#TODO
     elif matchings['bicie']   or matchings['biję']   or matchings['bije']  :
         speak("bicie")
         # czy jakiekolwiek możliwe z ewentualnymi pozycjami
 
-#
+#TODO
     elif matchings['szach']  :
         speak("szach")
         # czy jakikolwiek możliwy z ewentualnymi pozycjami
 
-#
+#TODO prom 1
     elif matchings['koronacja'] or matchings['hetmanowanie']:
         speak("koronacja, promowanie na hetmana")
         # czy jakakolwiek możliwa z ewentualnymi pozycjami
 
-#
+#TODO prom 2
     elif matchings['prom']   or matchings['promowanie']   or matchings['przemiana']   or matchings['awans']   or matchings['promuję']   or matchings['promuje']  :
         for piece in promWords:
             if matchings[piece]  :
@@ -125,8 +166,19 @@ def extractMove(results, savedMatchings = {}):
             extractMove( recognizeSpeech(), ["promowanie"])
 
     else:
-    # sprawdzenie możliwych ruchów ze względu na pozycje
-        speak(positions)
+        if positionsInterpreted == 1:   # ruch na tą pozycję, ewentualnie danego pionka
+            speak(positions)
+            moves = GameRules.available_moves(piece, positions, board)
+            if len(moves) == 1:
+                result_pos = GameRules.parse_tuple_position(moves[0]) + ' ' + positions
+                print(result_pos)
+                return result_pos
+            else:
+                speak("Zaproponowany ruch jest niejednoznaczny, proszę o doprecyzowanie")
+                return extractMove( recognizeSpeech(), board )
+        elif positionsInterpreted == 2:
+            speak(positions)
+            return positions
 
 
 
@@ -156,7 +208,9 @@ def recognizeSpeech():
             print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
 
-extractMove( recognizeSpeech())
+
+def getMoveFromSpeech(board):
+    return extractMove(recognizeSpeech(), board)
 
 
 

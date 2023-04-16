@@ -16,8 +16,11 @@ def main():
 
     while not game_over:
         print(board)
-        move = input("Podaj swój ruch (np. 'e2 e4'): ")
-        #move = extractMove(recognizeSpeech())
+
+        move = extractMove(recognizeSpeech(), board)
+        if not move:
+            continue
+        
         start_position, end_position = parse_move(move)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
@@ -51,6 +54,8 @@ def parse_move(move_str):
     start_position = (8 - int(start_str[1]), ord(start_str[0]) - ord('a'))
     end_position = (8 - int(end_str[1]), ord(end_str[0]) - ord('a'))
     return start_position, end_position
+
+
 
 def format_move(move):
     start_position, end_position = move
