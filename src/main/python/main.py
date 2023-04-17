@@ -6,6 +6,7 @@ from chess.game_rules import GameRules
 from chess.gui import ChessGUI
 
 from voice_control.s_recognition import *
+from commentary.commentator import *
 
 def main():
     board = Board()
@@ -21,9 +22,12 @@ def main():
         if not move:
             continue
         
+        
+
         start_position, end_position = parse_move(move)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
+            speak(getComment(move[3:]))
         else:
             print("Niepoprawny ruch, spróbuj ponownie.")
             continue
