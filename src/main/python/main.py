@@ -17,7 +17,7 @@ def main():
     while not game_over:
         print(board)
 
-        move = extractMove(recognizeSpeech(), board)
+        move = getMoveFromSpeech(board)
         if not move:
             continue
         

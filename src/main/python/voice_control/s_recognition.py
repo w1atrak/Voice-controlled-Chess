@@ -32,14 +32,14 @@ def cutSpaces(result):
 def extractMove(results, board, savedMatchings = {}): 
     if not results or not results['alternative']:
         return None
-    
+    print(results)
 
     keyWords = ["pionek", "pion", 
                 "wieża", "wieżę", 
                 "skoczek", "skoczka", 
                 "goniec", "gońca", 
                 "hetman", "hetmana", 
-                "król", 
+                "król", "króla", 
                 "roszada", "krótka", "długa", 
                 "przelot", "przelocie", 
                 "bicie", "biję", "bije", 
@@ -98,7 +98,7 @@ def extractMove(results, board, savedMatchings = {}):
         piece = "bishop"
     elif matchings["hetman"] > 0 or matchings["hetmana"] > 0:
         piece = "queen"
-    elif matchings["król"] > 0:
+    elif matchings["król"] > 0 or matchings["króla"] > 0:
         piece = "king"
 
         
@@ -165,16 +165,20 @@ def extractMove(results, board, savedMatchings = {}):
             speak("Doprecyzuj na co promować")
             extractMove( recognizeSpeech(), ["promowanie"])
 
+
     else:
         if positionsInterpreted == 1:   # ruch na tą pozycję, ewentualnie danego pionka
             speak(positions)
+            speak(piece)
             moves = GameRules.available_moves(piece, positions, board)
+            print(moves,"174 s_reco")
             if len(moves) == 1:
                 result_pos = GameRules.parse_tuple_position(moves[0]) + ' ' + positions
                 print(result_pos)
                 return result_pos
+                
             else:
-                speak("Zaproponowany ruch jest niejednoznaczny, proszę o doprecyzowanie")
+                speak("Zaproponowany ruch jest niejednoznaczny lub niepoprawny, proszę o doprecyzowanie")
                 return extractMove( recognizeSpeech(), board )
         elif positionsInterpreted == 2:
             speak(positions)
