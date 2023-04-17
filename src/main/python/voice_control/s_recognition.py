@@ -4,7 +4,6 @@ import re
 from voice_control.s_synthesis import speak
 from chess.game_rules import *
 
-# git push -u origin <branch>
 
 
 
@@ -29,7 +28,7 @@ def cutSpaces(result):
 
 
 
-def extractMove(results, board, savedMatchings = {}): 
+def extractKeyWords(results, board, savedMatchings = {}): 
     if not results or not results['alternative']:
         return None
     print(results)
@@ -47,7 +46,6 @@ def extractMove(results, board, savedMatchings = {}):
                 "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]
     pieces = ["pionek", "pion","wieża", "skoczek", "goniec", "hetman", "król"]
     # roszadaWords = ["krótka", "długa"]                 #
-    promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
 
     matchings = {x: 0 for x in keyWords}
 
@@ -101,12 +99,19 @@ def extractMove(results, board, savedMatchings = {}):
     elif matchings["król"] > 0 or matchings["króla"] > 0:
         piece = "king"
 
+    return analyzeKeyWords(matchings, board, positionsInterpreted, positions, piece)
         
+
+
+
+def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 #
+    promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
+
     if matchings['roszada']:
         if board.king_made_move or ( board.left_rook_made_move and board.right_rook_made_move ):
             speak("roszada nie jest możliwa")
-            return extractMove(recognizeSpeech(), board)
+            return extractKeyWords(recognizeSpeech(), board)
         
         rightCastlingPossible = not board.right_rook_made_move and GameRules.is_path_clear((7,5),(7,6),board)
         leftCastlingPossible = not board.left_rook_made_move and GameRules.is_path_clear((7,3),(7,1),board)
@@ -114,14 +119,14 @@ def extractMove(results, board, savedMatchings = {}):
         if matchings['krótka']:
             if not rightCastlingPossible:
                 speak("roszada krótka nie jest możliwa")
-                return extractMove(recognizeSpeech(), board)    
+                return extractKeyWords(recognizeSpeech(), board)    
             else:
                 return "e1 g1"
             
         if matchings['długa']:
             if not leftCastlingPossible:
                 speak("roszada długa nie jest możliwa")
-                return extractMove(recognizeSpeech(), board)
+                return extractKeyWords(recognizeSpeech(), board)
             else:
                 return "e1 c1"
             
@@ -163,7 +168,7 @@ def extractMove(results, board, savedMatchings = {}):
                 break 
         else:
             speak("Doprecyzuj na co promować")
-            extractMove( recognizeSpeech(), ["promowanie"])
+            extractKeyWords( recognizeSpeech(), ["promowanie"])
 
 
     else:
@@ -171,7 +176,6 @@ def extractMove(results, board, savedMatchings = {}):
             speak(positions)
             speak(piece)
             moves = GameRules.available_moves(piece, positions, board)
-            print(moves,"174 s_reco")
             if len(moves) == 1:
                 result_pos = GameRules.parse_tuple_position(moves[0]) + ' ' + positions
                 print(result_pos)
@@ -179,7 +183,7 @@ def extractMove(results, board, savedMatchings = {}):
                 
             else:
                 speak("Zaproponowany ruch jest niejednoznaczny lub niepoprawny, proszę o doprecyzowanie")
-                return extractMove( recognizeSpeech(), board )
+                return extractKeyWords( recognizeSpeech(), board )
         elif positionsInterpreted == 2:
             speak(positions)
             return positions
@@ -214,7 +218,7 @@ def recognizeSpeech():
 
 
 def getMoveFromSpeech(board):
-    return extractMove(recognizeSpeech(), board)
+    return extractKeyWords(recognizeSpeech(), board)
 
 
 
