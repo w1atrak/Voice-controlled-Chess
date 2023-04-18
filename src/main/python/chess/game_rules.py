@@ -1,3 +1,5 @@
+from chess.piece import *
+
 class GameRules:
     @staticmethod
     def is_path_clear(start_position, end_position, board):
@@ -29,7 +31,7 @@ class GameRules:
     def is_valid_move(piece, start_position, end_position, board):
         if not end_position:
             return False
-
+        
         if start_position == end_position:
             return False
         
@@ -39,22 +41,22 @@ class GameRules:
         destination_piece = board.get_piece(end_position)
         if destination_piece and destination_piece.color == piece.color:
             return False
-
-        piece_type = piece.piece_type
-        if piece_type == 'pawn':
+        
+        if isinstance(piece, Pawn):
             return GameRules.is_valid_pawn_move(piece, start_position, end_position, board)
-        elif piece_type == 'rook':
+        elif isinstance(piece, Rook):
             return GameRules.is_valid_rook_move(piece, start_position, end_position, board)
-        elif piece_type == 'bishop':
+        elif isinstance(piece, Bishop):
             return GameRules.is_valid_bishop_move(piece, start_position, end_position, board)
-        elif piece_type == 'queen':
+        elif isinstance(piece, Queen):
             return GameRules.is_valid_queen_move(piece, start_position, end_position, board)
-        elif piece_type == 'king':
+        elif isinstance(piece, King):
             return GameRules.is_valid_king_move(piece, start_position, end_position, board)
-        elif piece_type == 'knight':
+        elif isinstance(piece, Knight):
             return GameRules.is_valid_knight_move(piece, start_position, end_position, board)
 
         return False
+
 
     @staticmethod
     def is_valid_pawn_move(piece, start_position, end_position, board):
@@ -63,7 +65,7 @@ class GameRules:
         row_diff = end_row - start_row
         col_diff = abs(end_col - start_col)
 
-        if piece.color == 'white':
+        if piece.color == Color.WHITE:
             direction = -1
             initial_row = 6
         else:
@@ -162,7 +164,7 @@ class GameRules:
         for row in range(8):
             for col in range(8):
                 piece = board.get_piece((row, col))
-                if piece and piece.piece_type != 'king':
+                if isinstance(piece, King):
                     return False
         return True
 

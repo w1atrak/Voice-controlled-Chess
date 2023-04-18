@@ -1,5 +1,6 @@
 import pygame
 
+from chess.piece import *
 from chess.board import Board
 from chess.game_rules import GameRules
 
@@ -21,7 +22,7 @@ class ChessGUI:
 
     def load_piece_images(self):
         pieces = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king']
-        colors = ['white', 'black']
+        colors = [Color.WHITE.value, Color.BLACK.value]
         for color in colors:
             for piece in pieces:
                 image = pygame.image.load(f'src/main/resources/images/pieces/{color}_{piece}.png')
@@ -47,7 +48,7 @@ class ChessGUI:
             for col in range(8):
                 piece = self.board.get_piece((row, col))
                 if piece:
-                    image = self.piece_images[f'{piece.color}_{piece.piece_type}']
+                    image = self.piece_images[f'{piece.color.value}_{piece.piece_type}']
                     x, y = col * 100, row * 100
                     self.screen.blit(image, (x, y))
 

@@ -1,4 +1,4 @@
-from chess.piece import Piece
+from chess.piece import *
 from chess.game_rules import GameRules
 
 class Board:
@@ -47,7 +47,7 @@ class Board:
         for row in range(8):
             for col in range(8):
                 piece = self.get_piece((row, col))
-                if piece and piece.color == king_color and piece.piece_type == 'king':
+                if piece and piece.color == king_color and piece is King:
                     king_position = (row, col)
                     break
             if king_position:
@@ -55,18 +55,19 @@ class Board:
         return king_position
 
     def setup_pieces(self):
-        for row, color in [(0, 'black'), (7, 'white')]:
+        for row, color in [(0, Color.BLACK), (7, Color.WHITE)]:
             self.board[row] = [
-                Piece('rook', color),
-                Piece('knight', color),
-                Piece('bishop', color),
-                Piece('queen', color),
-                Piece('king', color),
-                Piece('bishop', color),
-                Piece('knight', color),
-                Piece('rook', color)
+                Rook(color),
+                Knight(color),
+                Bishop(color),
+                Queen(color),
+                King(color),
+                Bishop(color),
+                Knight(color),
+                Rook(color)
             ]
 
-        for row, color in [(1, 'black'), (6, 'white')]:
+        for row, color in [(1, Color.BLACK), (6, Color.WHITE)]:
             for col in range(8):
-                self.board[row][col] = Piece('pawn', color)
+                self.board[row][col] = Pawn(color)
+
