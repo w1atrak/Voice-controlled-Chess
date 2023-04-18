@@ -171,6 +171,7 @@ class GameRules:
         end_row, end_col = end_position
         if start_row != end_row and start_col != end_col:
             return False
+        if start_position == (7,7) and end_position == (7,5) and board.movesHistory[-1] == ((7,4),(7,6)): return True
         return GameRules.is_path_clear(start_position, end_position, board)
 
     @staticmethod
@@ -194,10 +195,10 @@ class GameRules:
         col_diff = abs(start_col - end_col)
         if row_diff <= 1 and col_diff <= 1:
             return True
-        
-        if GameRules.parse_tuple_position(end_position) == "g1" and "rightWhite" in GameRules.possibleCastlings:
+        print(GameRules.possibleCastlings(board))
+        if GameRules.parse_tuple_position(end_position) == "g1" and "rightWhite" in GameRules.possibleCastlings(board):
             return True
-        if GameRules.parse_tuple_position(end_position) == "c1" and "leftWhite" in GameRules.possibleCastlings:
+        if GameRules.parse_tuple_position(end_position) == "c1" and "leftWhite" in GameRules.possibleCastlings(board):
             return True
 
         return False

@@ -28,7 +28,7 @@ def cutSpaces(result):
 
 
 
-def extractKeyWords(results, board, savedMatchings = {}): 
+def extractKeyWords(results, board, savedMatchings = []): 
     if not results or not results['alternative']:
         return None
     print(results)
@@ -54,7 +54,7 @@ def extractKeyWords(results, board, savedMatchings = {}):
     
 
     positions = ''
-    positionsInterpreted = -1
+    positionsInterpreted = 0
     
     for result in results['alternative']:
 
@@ -69,10 +69,14 @@ def extractKeyWords(results, board, savedMatchings = {}):
                 matchings[word] += 1
             
             if re.match(r'([a-h][1-8])', word):
+                if positionsInterpreted: continue
                 if not startPos:
                     startPos = word
-                elif not endPos and word != startPos:
+                    positionsInterpreted = 1
+                elif not endPos :
+                    positionsInterpreted = 2
                     endPos = word  
+                print(word, startPos, endPos, "word")
 
         if startPos and endPos:
             positions = startPos + ' ' + endPos
@@ -80,8 +84,7 @@ def extractKeyWords(results, board, savedMatchings = {}):
         elif startPos and not endPos and positionsInterpreted < 2:
             positions = startPos
             positionsInterpreted = 1
-        elif not startPos:
-            positionsInterpreted = 0
+
     # piecesWords = ["pionek", "pion", "wieża", "wieżę", "skoczek", "skoczka", "goniec", "gońca", "hetman", "hetmana", "król"]
 
 
@@ -99,6 +102,7 @@ def extractKeyWords(results, board, savedMatchings = {}):
     elif matchings["król"] > 0 or matchings["króla"] > 0:
         piece = "king"
 
+    print(positionsInterpreted, "pos")
     return analyzeKeyWords(matchings, board, positionsInterpreted, positions, piece)
         
 
@@ -106,7 +110,7 @@ def extractKeyWords(results, board, savedMatchings = {}):
 
 def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 #
-    
+    print(piece, positions, positionsInterpreted)
     if positionsInterpreted == 2:
         speak(positions)
         return positions
@@ -191,6 +195,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 
 #
     if positionsInterpreted == 1:   # ruch na tą pozycję, ewentualnie danego pionka
+        print("x")
         speak(positions)
         moves = GameRules.available_moves(piece, positions, board)
         if len(moves) == 1:

@@ -6,7 +6,7 @@ class Board:
     king_made_move = False
     left_rook_made_move = False
     right_rook_made_move = False
-    movesHistory = []
+    movesHistory = [((-1,-1),(-1,-1))]
 
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]

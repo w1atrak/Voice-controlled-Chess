@@ -17,11 +17,16 @@ def main():
     while not game_over:
         print(board)
 
-        move = getMoveFromSpeech(board)
+        if board.movesHistory[-1] == ((7,4),(7,6)):
+            speak("czas na wieżę")
+            move = "h1 f1"
+        else:
+            move = getMoveFromSpeech(board)
         if not move:
             continue
         
         start_position, end_position = parse_move(move)
+        print(start_position, end_position)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
             board.movesHistory.append((start_position, end_position))
