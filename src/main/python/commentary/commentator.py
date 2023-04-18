@@ -18,8 +18,10 @@ def getComment(position, piece = ""):
             i = random.randint(0, len(default)-1)
             return default[i]
         else:
+            if not (position in data):
+                return "Brak słów"
+        
             return data[position]
         
-
 
 
