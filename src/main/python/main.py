@@ -21,6 +21,14 @@ def game_logic(gui, player1, player2, board):
                 game_over = True
                 break
 
+        if board.movesHistory[-1] == ((7,4),(7,6)):
+            speak("czas na wieżę")
+            move = "h1 f1"
+        else:
+            move = getMoveFromSpeech(board)
+        if not move:
+            continue
+        
         gui.draw_board()
         gui.draw_pieces()
         pygame.display.flip()
@@ -29,9 +37,11 @@ def game_logic(gui, player1, player2, board):
         move = input("Podaj swój ruch (np. 'e2 e4'): ")
         #move = extractMove(recognizeSpeech())
         start_position, end_position = parse_move(move)
+        print(start_position, end_position)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
             speak(getComment(move[3:]))
+            board.movesHistory.append((start_position, end_position))
         else:
             print("Niepoprawny ruch, spróbuj ponownie.")
             continue
