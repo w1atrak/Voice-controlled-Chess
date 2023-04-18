@@ -9,7 +9,8 @@ from chess.random_ai_player import RandomAIPlayer
 from chess.game_rules import GameRules
 from chess.gui import ChessGUI
 
-#from voice_control.s_recognition import *
+from voice_control.s_recognition import *
+from commentary.commentator import *
 
 def game_logic(gui, player1, player2, board):
     game_over = False
@@ -30,6 +31,7 @@ def game_logic(gui, player1, player2, board):
         start_position, end_position = parse_move(move)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
+            speak(getComment(move[3:]))
         else:
             print("Niepoprawny ruch, spróbuj ponownie.")
             continue
@@ -78,6 +80,8 @@ def parse_move(move_str):
     start_position = (8 - int(start_str[1]), ord(start_str[0]) - ord('a'))
     end_position = (8 - int(end_str[1]), ord(end_str[0]) - ord('a'))
     return start_position, end_position
+
+
 
 def format_move(move):
     start_position, end_position = move

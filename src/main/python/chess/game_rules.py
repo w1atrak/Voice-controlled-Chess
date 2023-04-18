@@ -57,7 +57,6 @@ class GameRules:
 
         return False
 
-
     @staticmethod
     def is_valid_pawn_move(piece, start_position, end_position, board):
         start_row, start_col = start_position
