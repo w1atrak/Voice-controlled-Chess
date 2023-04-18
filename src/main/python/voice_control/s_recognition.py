@@ -48,7 +48,8 @@ def extractMove(results, board, savedMatchings = {}):
     pieces = ["pionek", "pion","wieża", "skoczek", "goniec", "hetman", "król"]
     # roszadaWords = ["krótka", "długa"]                 #
     promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
-
+    pieces = ["pionek", "pion", "wieża", "skoczek", "goniec", "hetman", "król"]
+    
     matchings = {x: 0 for x in keyWords}
 
     for word in savedMatchings:
@@ -57,6 +58,7 @@ def extractMove(results, board, savedMatchings = {}):
 
     positions = ''
     positionsInterpreted = -1
+    mainPiece = None
     
     for result in results['alternative']:
 
@@ -70,7 +72,10 @@ def extractMove(results, board, savedMatchings = {}):
             if word in keyWords: 
                 matchings[word] += 1
             
-            if re.match(r'([a-h][1-8])', word):
+            if word in pieces and not mainPiece:
+                mainPiece = word
+            
+            if re.match(r'(^[a-h][1-8]$)', word):
                 if not startPos:
                     startPos = word
                 elif not endPos:
@@ -184,8 +189,11 @@ def extractMove(results, board, savedMatchings = {}):
             speak(positions)
             return positions
 
+# 
+    else:
+        speak("nie rozpoznano ruchu")
 
-
+    print(positions)
     return None
 
 
@@ -196,20 +204,18 @@ def extractMove(results, board, savedMatchings = {}):
 
 def recognizeSpeech():
 
-    while True:
-        r = sr.Recognizer()
-        with sr.Microphone() as source:
-            r.adjust_for_ambient_noise(source,duration=0.3)
-            print("Say something!")
-            audio = r.listen(source)
-
-        try:
-            return r.recognize_google(audio, language='pl_PL', show_all=True)
-
-        except sr.UnknownValueError:
-            print("Google Speech Recognition could not understand audio")
-        except sr.RequestError as e:
-            print("Could not request results from Google Speech Recognition service; {0}".format(e))
+    r = sr.Recognizer()
+    print(sr.Microphone())
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+        print("Say something!")
+        audio = r.listen(source)
+    try:
+        return r.recognize_google(audio, language='pl_PL', show_all=True)
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand audio")
+    except sr.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
 
 
