@@ -24,6 +24,7 @@ def main():
         start_position, end_position = parse_move(move)
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
+            board.movesHistory.append((start_position, end_position))
         else:
             print("Niepoprawny ruch, spróbuj ponownie.")
             continue

@@ -71,7 +71,7 @@ def extractKeyWords(results, board, savedMatchings = {}):
             if re.match(r'([a-h][1-8])', word):
                 if not startPos:
                     startPos = word
-                elif not endPos:
+                elif not endPos and word != startPos:
                     endPos = word  
 
         if startPos and endPos:
@@ -106,6 +106,12 @@ def extractKeyWords(results, board, savedMatchings = {}):
 
 def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 #
+    
+    if positionsInterpreted == 2:
+        speak(positions)
+        return positions
+
+#
     promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
 
     if matchings['roszada']:
@@ -113,47 +119,59 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             speak("roszada nie jest możliwa")
             return extractKeyWords(recognizeSpeech(), board)
         
-        rightCastlingPossible = not board.right_rook_made_move and GameRules.is_path_clear((7,5),(7,6),board)
-        leftCastlingPossible = not board.left_rook_made_move and GameRules.is_path_clear((7,3),(7,1),board)
+        castlings = GameRules.possibleCastlings(board)
 
         if matchings['krótka']:
-            if not rightCastlingPossible:
+            if not "rightWhite" in castlings:
                 speak("roszada krótka nie jest możliwa")
                 return extractKeyWords(recognizeSpeech(), board)    
             else:
+                speak("roszada krótka")
                 return "e1 g1"
             
         if matchings['długa']:
-            if not leftCastlingPossible:
+            if not "leftWhite" in castlings:
                 speak("roszada długa nie jest możliwa")
                 return extractKeyWords(recognizeSpeech(), board)
             else:
+                speak("roszada długa")
                 return "e1 c1"
             
-        if leftCastlingPossible:
+        if "leftWhite" in castlings and not "rightWhite" in castlings:
             speak("roszada długa")
             return "e1 c1"
-        elif rightCastlingPossible:
+        elif "rightWhite" in castlings and not "leftWhite" in castlings:
             speak("roszada krótka")
             return "e1 g1"
 
         else:
-            speak("roszada nie jest możliwa")
+            speak("roszada nie jednoznacza")
             
-#TODO
     elif matchings['przelot']   or matchings['przelocie']  :
         speak("bicie w przelocie")
-        # czy jakakolwiek możliwa z ewentualnymi pozycjami
+        res = GameRules.transit(positions, board)
+        if not res:
+            speak("nie ma takiego przelotu")
+            return extractKeyWords(recognizeSpeech(), board)
+        else:
+            return res
+
+
+
+
+    elif matchings['szach']:
+        res = GameRules.moveWillResultInCheck(board, piece, positions)
+        if not res: 
+            speak("roszada nie możliwa lub nie jednoznacza")
+            return extractKeyWords(recognizeSpeech(), board)
+        if len(res) == 1:
+            return res[0] + " " + positions
+
 
 #TODO
     elif matchings['bicie']   or matchings['biję']   or matchings['bije']  :
+        res = GameRules.canAttack(piece, positions, board)
         speak("bicie")
-        # czy jakiekolwiek możliwe z ewentualnymi pozycjami
-
-#TODO
-    elif matchings['szach']  :
-        speak("szach")
-        # czy jakikolwiek możliwy z ewentualnymi pozycjami
 
 #TODO prom 1
     elif matchings['koronacja'] or matchings['hetmanowanie']:
@@ -171,25 +189,21 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             extractKeyWords( recognizeSpeech(), ["promowanie"])
 
 
-    else:
-        if positionsInterpreted == 1:   # ruch na tą pozycję, ewentualnie danego pionka
-            speak(positions)
-            speak(piece)
-            moves = GameRules.available_moves(piece, positions, board)
-            if len(moves) == 1:
-                result_pos = GameRules.parse_tuple_position(moves[0]) + ' ' + positions
-                print(result_pos)
-                return result_pos
-                
-            else:
-                speak("Zaproponowany ruch jest niejednoznaczny lub niepoprawny, proszę o doprecyzowanie")
-                return extractKeyWords( recognizeSpeech(), board )
-        elif positionsInterpreted == 2:
-            speak(positions)
-            return positions
+#
+    if positionsInterpreted == 1:   # ruch na tą pozycję, ewentualnie danego pionka
+        speak(positions)
+        moves = GameRules.available_moves(piece, positions, board)
+        if len(moves) == 1:
+            result_pos = GameRules.parse_tuple_position(moves[0]) + ' ' + positions
+            print(result_pos)
+            return result_pos
+            
+        else:
+            speak("Zaproponowany ruch jest niejednoznaczny lub niepoprawny, proszę o doprecyzowanie")
+            return extractKeyWords( recognizeSpeech(), board )
 
 
-
+    speak("Nie zrozumiano ruchu, proszę o więcej informacji")
     return None
 
 
