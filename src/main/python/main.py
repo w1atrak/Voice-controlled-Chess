@@ -20,14 +20,14 @@ def game_logic(gui, player1, player2, board):
             if event.type == pygame.QUIT:
                 game_over = True
                 break
-
+        # board.CheckIfLastMoveWasSpecial()
         if board.movesHistory[-1] == ((7,4),(7,6)):
             speak("czas na wieżę")
             move = "h1 f1"
-        else:
-            move = getMoveFromSpeech(board)
-        if not move:
-            continue
+        # else:
+        #     move = getMoveFromSpeech(board)
+        # if not move:
+        #     continue
         
         gui.draw_board()
         gui.draw_pieces()

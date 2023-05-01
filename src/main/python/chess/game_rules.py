@@ -194,10 +194,11 @@ class GameRules:
         if row_diff <= 1 and col_diff <= 1:
             return True
         print(GameRules.possibleCastlings(board))
-        if GameRules.parse_tuple_position(end_position) == "g1" and "rightWhite" in GameRules.possibleCastlings(board):
-            return True
-        if GameRules.parse_tuple_position(end_position) == "c1" and "leftWhite" in GameRules.possibleCastlings(board):
-            return True
+        if GameRules.parse_tuple_position(start_position) == "e1":
+            if GameRules.parse_tuple_position(end_position) == "g1" and "rightWhite" in GameRules.possibleCastlings(board):
+                return True
+            if GameRules.parse_tuple_position(end_position) == "c1" and "leftWhite" in GameRules.possibleCastlings(board):
+                return True
 
         return False
 
