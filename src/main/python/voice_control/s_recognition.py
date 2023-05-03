@@ -123,7 +123,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
     promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
 
     if matchings['roszada']:
-        if board.king_made_move or ( board.left_rook_made_move and board.right_rook_made_move ):
+        if board.white_king_made_move or ( board.left_white_rook_made_move and board.right_white_rook_made_move ):
             speak("roszada nie jest możliwa")
             return extractKeyWords(recognizeSpeech(), board)
         
@@ -170,7 +170,6 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
     elif matchings['szach']:
         res = GameRules.moveWillResultInCheck(board, piece, positions)
         if not res: 
-            speak("roszada nie możliwa lub nie jednoznacza")
             return extractKeyWords(recognizeSpeech(), board)
         if len(res) == 1:
             return res[0] + " " + positions

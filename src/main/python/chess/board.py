@@ -1,11 +1,15 @@
 from chess.piece import *
 from chess.game_rules import GameRules
+from chess.player import Player
 
 class Board:
 
-    king_made_move = False
-    left_rook_made_move = False
-    right_rook_made_move = False
+    white_king_made_move = False
+    black_king_made_move = False
+    left_white_rook_made_move = False
+    right_white_rook_made_move = False
+    left_black_rook_made_move = False
+    right_black_rook_made_move = False
     movesHistory = [((-1,-1),(-1,-1))]
 
     def __init__(self):
@@ -77,3 +81,20 @@ class Board:
             for col in range(8):
                 self.board[row][col] = Pawn(color)
 
+
+    def specialMoves(self, player):
+        if len(self.movesHistory) == 1: return False
+
+        lastMove = self.movesHistory[-1]
+        startPos = lastMove[0] 
+        endPos = lastMove[1]
+        print(lastMove)
+        if isinstance(self.get_piece(endPos), King):
+            if endPos == (7,6) and startPos == (7,4):
+                player.make_move(self, ((7,7),(7,5)))
+                return "h1 f1"
+            if endPos == (7,2) and startPos == (7,4):
+                player.make_move(self, ((7,0),(7,3)))
+                return "a1 d1"
+        
+        return None

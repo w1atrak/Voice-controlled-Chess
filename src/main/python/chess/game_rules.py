@@ -1,4 +1,4 @@
-from chess.piece import *
+from chess.piece import King, Piece
 
 class GameRules:
 
@@ -19,12 +19,22 @@ class GameRules:
     @staticmethod
     def possibleCastlings(board):
         res = []
-        rightCastlingPossible = not board.right_rook_made_move and GameRules.is_path_clear((7,5),(7,6),board)
-        leftCastlingPossible = not board.left_rook_made_move and GameRules.is_path_clear((7,3),(7,1),board)
-        if rightCastlingPossible:
+        rightWhiteCastlingPossible = not board.white_king_made_move and ( not board.right_white_rook_made_move and GameRules.is_path_clear((7,5),(7,6),board) )
+        leftWhiteCastlingPossible =  not board.white_king_made_move and ( not board.left_white_rook_made_move and GameRules.is_path_clear((7,3),(7,1),board) )
+
+        rightBlackCastlingPossible = not board.black_king_made_move and ( not board.right_black_rook_made_move and GameRules.is_path_clear((0,5),(0,6),board) )
+        leftBlackCastlingPossible =  not board.black_king_made_move and ( not board.left_black_rook_made_move and GameRules.is_path_clear((0,3),(0,1),board) )
+        
+
+        if rightWhiteCastlingPossible:
             res.append("rightWhite")
-        if leftCastlingPossible:
+        if leftWhiteCastlingPossible:
             res.append("leftWhite")
+        if rightBlackCastlingPossible:
+            res.append("rightBlack")
+        if leftBlackCastlingPossible:
+            res.append("leftBlack")
+            
         return res
 
 
@@ -167,7 +177,6 @@ class GameRules:
 
     @staticmethod
     def only_kings_left(board):
-        return False
         for row in range(8):
             for col in range(8):
                 piece = board.get_piece((row, col))

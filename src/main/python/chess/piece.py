@@ -1,5 +1,4 @@
 from chess.player import Color
-from chess.game_rules import GameRules
 
 class Piece:
     def __init__(self, color: Color):
@@ -66,6 +65,8 @@ class Bishop(Piece):
         return 'B' if self.color == Color.WHITE else 'b'
     
     def is_valid_move(self, start_position, end_position, board):
+        from chess.game_rules import GameRules
+
         start_row, start_col = start_position
         end_row, end_col = end_position
         if abs(start_row - end_row) != abs(start_col - end_col):
@@ -81,11 +82,18 @@ class Rook(Piece):
         return 'R' if self.color == Color.WHITE else 'r'
     
     def is_valid_move(self, start_position, end_position, board):
+        from chess.game_rules import GameRules
+
         start_row, start_col = start_position
         end_row, end_col = end_position
         if start_row != end_row and start_col != end_col:
             return False
-        if start_position == (7,7) and end_position == (7,5) and board.movesHistory[-1] == ((7,4),(7,6)): return True
+        if isinstance(board.get_piece(board.movesHistory[-1][1]), King):
+            if start_position == (7,7) and end_position == (7,5) and board.movesHistory[-1] == ((7,4),(7,6)): 
+                return not board.right_white_rook_made_move
+            if start_position == (7,0) and end_position == (7,3) and board.movesHistory[-1] == ((7,4),(7,2)): 
+                return not board.left_white_rook_made_move
+            
         return GameRules.is_path_clear(start_position, end_position, board)
 
 
@@ -115,17 +123,21 @@ class King(Piece):
         return 'K' if self.color == Color.WHITE else 'k'
 
     def is_valid_move(self, start_position, end_position, board):
+        from chess.game_rules import GameRules
+
         start_row, start_col = start_position
         end_row, end_col = end_position
         row_diff = abs(start_row - end_row)
         col_diff = abs(start_col - end_col)
         if row_diff <= 1 and col_diff <= 1:
+            board.white_king_made_move = True
             return True
-        print(GameRules.possibleCastlings(board))
         if GameRules.parse_tuple_position(start_position) == "e1":
             if GameRules.parse_tuple_position(end_position) == "g1" and "rightWhite" in GameRules.possibleCastlings(board):
+                board.white_king_made_move = True
                 return True
             if GameRules.parse_tuple_position(end_position) == "c1" and "leftWhite" in GameRules.possibleCastlings(board):
+                board.white_king_made_move = True
                 return True
 
         return False
