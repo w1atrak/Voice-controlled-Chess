@@ -3,6 +3,7 @@ import speech_recognition as sr
 import re
 from voice_control.s_synthesis import speak
 from chess.game_rules import *
+from chess.piece import *
 
 
 
@@ -15,7 +16,7 @@ def cutSpaces(result):
     removed = 0
     for index, char in enumerate(result):
         if char.isdigit() and len(result) > 2: 
-            index -= removed           # and > or 
+            index -= removed           
             if ( index == 2 or index > 2 and result[index-3].isspace()  ) and ( ( result[index-1].isspace() or result[index-1] == "-" ) and result[index-2].isalpha() ) :
                     result = result[:index-1] + result[index:]   
                     removed += 1
@@ -31,7 +32,7 @@ def cutSpaces(result):
 def extractKeyWords(results, board, savedMatchings = []): 
     if not results or not results['alternative']:
         return None
-    print(results)
+    print(results, "s_reco/extractKeyWords")
 
     keyWords = ["pionek", "pion", 
                 "wieża", "wieżę", 
@@ -92,19 +93,19 @@ def extractKeyWords(results, board, savedMatchings = []):
     # piecesWords = ["pionek", "pion", "wieża", "wieżę", "skoczek", "skoczka", "goniec", "gońca", "hetman", "hetmana", "król"]
 
 
-    piece = ""
+    piece = None
     if matchings["pionek"] > 0 or matchings["pion"] > 0:
-        piece = "pawn"
+        piece = Pawn(Color.WHITE)
     elif matchings["wieża"] > 0 or matchings["wieżę"] > 0:
-        piece = "rook"
+        piece = Rook(Color.WHITE)
     elif matchings["skoczek"] > 0 or matchings["skoczka"] > 0:
-        piece = "knight"
+        piece = Knight(Color.WHITE)
     elif matchings["goniec"] > 0 or matchings["gońca"] > 0:
-        piece = "bishop"
+        piece = Bishop(Color.WHITE)
     elif matchings["hetman"] > 0 or matchings["hetmana"] > 0:
-        piece = "queen"
+        piece = Queen(Color.WHITE)
     elif matchings["król"] > 0 or matchings["króla"] > 0:
-        piece = "king"
+        piece = King(Color.WHITE)
 
     print(positionsInterpreted, "pos")
     return analyzeKeyWords(matchings, board, positionsInterpreted, positions, piece)
@@ -114,7 +115,6 @@ def extractKeyWords(results, board, savedMatchings = []):
 
 def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 #
-    print(piece, positions, positionsInterpreted)
     if positionsInterpreted == 2:
         speak(positions)
         return positions
@@ -168,29 +168,27 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 
 
     elif matchings['szach']:
-        res = GameRules.moveWillResultInCheck(board, piece, positions)
+      
+        res = GameRules.movesThatWillResultInCheck(board, piece, positions)
         if not res: 
             return extractKeyWords(recognizeSpeech(), board)
         if len(res) == 1:
             return res[0] + " " + positions
 
 
-#TODO
-    elif matchings['bicie']   or matchings['biję']   or matchings['bije']  :
-        res = GameRules.canAttack(piece, positions, board)
-        speak("bicie")
 
-#TODO prom 1
+
     elif matchings['koronacja'] or matchings['hetmanowanie']:
-        speak("koronacja, promowanie na hetmana")
+        speak("koronacja")
+        board.requestedPromotionFigure = Queen(Color.WHITE)
         # czy jakakolwiek możliwa z ewentualnymi pozycjami
 
-#TODO prom 2
-    elif matchings['prom']   or matchings['promowanie']   or matchings['przemiana']   or matchings['awans']   or matchings['promuję']   or matchings['promuje']  :
-        for piece in promWords:
-            if matchings[piece]  :
-                speak("promowanie na " + piece)
-                break 
+    elif matchings['prom']   or matchings['promowanie']   or matchings['przemiana']   or matchings['awans']   or matchings['promuję']   or matchings['promuje']:
+
+        if piece:
+            board.requestedPromotionFigure = piece
+            speak("promowanie na " + piece.symbol())
+            
         else:
             speak("Doprecyzuj na co promować")
             extractKeyWords( recognizeSpeech(), ["promowanie"])
@@ -218,7 +216,9 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
     return None
 
 
-
+def requestPromFigure():
+    matchings = {"prom" : 1}
+    return analyzeKeyWords(matchings, board=None,positionsInterpreted=0,positions=None,piece=None)
 
 
 

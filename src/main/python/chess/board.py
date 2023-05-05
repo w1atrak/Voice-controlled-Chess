@@ -1,6 +1,7 @@
 from chess.piece import *
 from chess.game_rules import GameRules
 from chess.player import Player
+from voice_control.s_recognition import requestPromFigure
 
 class Board:
 
@@ -11,6 +12,8 @@ class Board:
     left_black_rook_made_move = False
     right_black_rook_made_move = False
     movesHistory = [((-1,-1),(-1,-1))]
+    
+    requestedPromotionFigure = None
 
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
@@ -96,5 +99,12 @@ class Board:
             if endPos == (7,2) and startPos == (7,4):
                 player.make_move(self, ((7,0),(7,3)))
                 return "a1 d1"
+            
+        # promowanie po ruchu pionka na ostatnie pole
+        if not endPos[0] and isinstance(self.get_piece(endPos), Pawn):
+            if not self.requestedPromotionFigure:
+                requestPromFigure()
+            self.board[endPos[0]][endPos[1]] = self.requestedPromotionFigure
+            self.requestedPromotionFigure = None
         
         return None

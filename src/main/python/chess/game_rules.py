@@ -1,17 +1,28 @@
 from chess.piece import King, Piece
+from chess.player import Color
 
 class GameRules:
 
     @staticmethod
-    def transit(position, board):
+    def transit(position, board):  #starting position, can be None
         lastMove = board.movesHistory[-1]
-        if lastMove[0][0] == 1 and lastMove[1][0] == 3:
-            x = lastMove[1][1]
-            for i in range(8):
-                if board.get_piece((3,i)) and board.get_piece((3,i)).piece_type == 'pawn':
-                    if position and position != GameRules.parse_tuple_position((3,i)):
-                        return False
-                    return GameRules.parse_tuple_position((3,i)) + ' ' + GameRules.parse_tuple_position((2,x))
+        color = board.get_piece(lastMove[1]).color
+        x = lastMove[1][1]
+        
+        if color == color.BLACK:
+            if lastMove[0][0] == 1 and lastMove[1][0] == 3:
+                for i in range(8):
+                    if board.get_piece((3,i)) and board.get_piece((3,i)).piece_type == 'pawn' and board.get_piece((3,i)).color == color.WHITE:
+                        if position and position != GameRules.parse_tuple_position((3,i)):
+                            return False
+                        return GameRules.parse_tuple_position((3,i)) + ' ' + GameRules.parse_tuple_position((2,x))
+        if color == color.WHITE:
+            if lastMove[0][0] == 6 and lastMove[1][0] == 4:
+                for i in range(8):
+                    if board.get_piece((4,i)) and board.get_piece((4,i)).piece_type == 'pawn' and board.get_piece((4,i)).color == color.BLACK:
+                        if position and position != GameRules.parse_tuple_position((4,i)):
+                            return False
+                        return GameRules.parse_tuple_position((4,i)) + ' ' + GameRules.parse_tuple_position((5,x))
                 
         return False
 
@@ -39,16 +50,16 @@ class GameRules:
 
 
     @staticmethod
-    def moveWillResultInCheck(board, piece, position):
+    def movesThatWillResultInCheck(board, piece, position):  
         if position:
             position = GameRules.parse_str_position(position)
             moves = GameRules.available_moves(piece, position, board)
-            counter = 0
+            resultMoves = []
             for move in moves:
                 if GameRules.is_king_in_check_after_move(board.get_piece(move), move, position, board):
-                    counter += 1
-            if counter == 1: return [ GameRules.parse_tuple_position(moves[0]) ]
-            elif counter > 0: return False
+                    resultMoves.append(move)
+            if len(resultMoves) == 1: return [ GameRules.parse_tuple_position(resultMoves[0]) ]
+            else: return False
 
         if not position and piece:
             moves = []
@@ -57,12 +68,14 @@ class GameRules:
                     position = GameRules.parse_tuple_position((i,j))
                     for e in GameRules.available_moves(piece, position, board):
                         moves.append(e)
-            counter = 0
+            
+            resultMoves = []
+            
             for move in moves:
                 if GameRules.is_king_in_check_after_move(piece, move, position, board):
-                    counter += 1
-            if counter == 1: return [ GameRules.parse_tuple_position(moves[0]) ]
-            elif counter > 0: return False
+                    resultMoves.append(move)
+            if len(resultMoves) == 1: return [ GameRules.parse_tuple_position(resultMoves[0]) ]
+            else: return False
 
         
     
@@ -124,15 +137,13 @@ class GameRules:
         return position
 
     @staticmethod
-    def available_moves(piece, position, board):
-        if piece:
-            piece = Piece(piece, 'white')
+    def available_moves(piece, position, board): # end position
 
         moves = []
         for row in range(8):
             for col in range(8):
                 piece_at_position = board.get_piece((row, col))
-                if (not piece and piece_at_position)  or (piece_at_position and piece.color == piece_at_position.color and piece_at_position.piece_type == piece.piece_type):
+                if (not piece and piece_at_position)  or (piece_at_position and piece and piece.color == piece_at_position.color and piece_at_position.piece_type == piece.piece_type):
                     if GameRules.is_valid_move(piece_at_position, (row,col), GameRules.parse_str_position(position), board):
                         moves.append((row, col))
         return moves

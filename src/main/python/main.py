@@ -41,6 +41,7 @@ def game_logic(gui, player1, player2, board):
             print("Niepoprawny ruch, spróbuj ponownie.")
             continue
 
+
         gui.draw_board()
         gui.draw_pieces()
         pygame.display.flip()
@@ -65,6 +66,7 @@ def game_logic(gui, player1, player2, board):
             print("Pat! Remis.")
             game_over = True
             break
+
 
 def main():
     board = Board()
