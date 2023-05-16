@@ -1,7 +1,8 @@
 from chess.piece import *
 from chess.game_rules import GameRules
-from chess.player import Player
+from chess.player import Player, Color
 from voice_control.s_recognition import requestPromFigure
+from main import getBoardValue
 
 class Board:
 
@@ -113,4 +114,24 @@ class Board:
         return None
 
     def provideHintMove(self):
-        pass
+        bestMove = None
+        bestVal = float('inf')
+        for startRow in range(8):
+            for startCol in range(8):
+                piece = self.get_piece((startRow, startCol))
+                if piece and piece.color == Color.WHITE:
+                    for endRow in range(8):
+                        for endCol in range(8):
+                            if self.is_valid_move(piece, (startRow, startCol), (endRow, endCol)):
+                                taken = self[endRow][endCol]
+                                self[endRow][endCol] = piece
+                                self[startRow][startCol] = None
+                                val = getBoardValue(self) 
+                                if val < bestVal:
+                                    bestVal = val
+                                    bestMove = [(startRow, startCol), (endRow, endCol)]
+                                self.undo_move((startRow, startCol), (endRow, endCol), taken)
+        if bestMove:
+            return GameRules.parse_tuple_position(bestMove[0]) + ' ' + GameRules.parse_tuple_position(bestMove[1])
+        return None            
+                                
