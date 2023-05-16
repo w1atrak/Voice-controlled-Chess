@@ -38,6 +38,15 @@ def game_logic(gui, player1, player2, board):
             ##########speak(getComment(move[3:]))
             board.movesHistory.append((start_position, end_position, endPositionPiece))
             board.specialMoves(player1)
+            
+            prevVal = board.value
+            newVal = getBoardValue(board)
+            if newVal < prevVal:
+                speak("Dobry ruch")
+            elif newVal > prevVal:
+                speak("Czy to na pewno był dobry ruch?")
+                
+            board.value = newVal
 
         else:
             print("Niepoprawny ruch, spróbuj ponownie.")
@@ -68,6 +77,11 @@ def game_logic(gui, player1, player2, board):
             print("Pat! Remis.")
             game_over = True
             break
+
+
+def getBoardValue(board):
+    aiplayer = AIPlayer(Color.BLACK)
+    return aiplayer.evaluate_board(board)
 
 
 def main():

@@ -13,6 +13,8 @@ class Board:
     right_black_rook_made_move = False
     movesHistory = [((-1,-1),(-1,-1))]
     player2 = None
+    value = 0
+    
     
     requestedPromotionFigure = None
 
@@ -109,3 +111,6 @@ class Board:
             self.requestedPromotionFigure = None
         
         return None
+
+    def provideHintMove(self):
+        pass
