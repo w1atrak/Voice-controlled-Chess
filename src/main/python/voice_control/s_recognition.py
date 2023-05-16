@@ -34,7 +34,8 @@ def extractKeyWords(results, board, savedMatchings = []):
         return None
     print(results, "s_reco/extractKeyWords")
 
-    keyWords = ["pionek", "pion", 
+    keyWords = ["cofnij", 
+                "pionek", "pion", 
                 "wieża", "wieżę", 
                 "skoczek", "skoczka", 
                 "goniec", "gońca", 
@@ -114,10 +115,19 @@ def extractKeyWords(results, board, savedMatchings = []):
 
 
 def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
+    if matchings["cofnij"] and len(board.movesHistory) > 1:
+            lastMove = board.movesHistory.pop()
+            board.undo_move(lastMove[0], lastMove[1], lastMove[2])
+            board.player2.undoMove(board)
+            
+            return extractKeyWords(recognizeSpeech(), board)
+            
+    
 #
     if positionsInterpreted == 2:
         speak(positions)
         return positions
+
 
 #
     promWords = ["wieża", "skoczek", "goniec", "hetman", "wieżę", "skoczka", "gońca", "hetmana"]
@@ -212,12 +222,24 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
     else:
         speak("nie rozpoznano ruchu")
 
-    speak("Nie zrozumiano ruchu, proszę o więcej informacji")
     return None
 
 
 def requestPromFigure():
-    matchings = {"prom" : 1}
+    keyWords = ["cofnij", 
+                "pionek", "pion", 
+                "wieża", "wieżę", 
+                "skoczek", "skoczka", 
+                "goniec", "gońca", 
+                "hetman", "hetmana", 
+                "król", "króla", 
+                "roszada", "krótka", "długa", 
+                "przelot", "przelocie", 
+                "bicie", "biję", "bije", 
+                "szach", 
+                "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]
+    matchings = {x: 0 for x in keyWords}
+    matchings["prom"] = 1
     return analyzeKeyWords(matchings, board=None,positionsInterpreted=0,positions=None,piece=None)
 
 

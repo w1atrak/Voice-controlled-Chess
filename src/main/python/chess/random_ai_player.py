@@ -3,10 +3,18 @@ import random
 from chess.player import Player
 
 class RandomAIPlayer(Player):
+    movesHistory = []
+    
     def make_move(self, board):
         move = random.choice(self.get_legal_moves(board))
-        board.make_move(*move)
+        piece = board.make_move(*move)
+        self.movesHistory.append((move[0], move[1], piece))
         return move
+    
+    def undoMove(self, board):
+        lastMove = self.movesHistory.pop()
+        board.undo_move(lastMove[0], lastMove[1], lastMove[2])
+
 
     def get_legal_moves(self, board):
         legal_moves = []

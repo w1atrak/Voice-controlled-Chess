@@ -12,6 +12,7 @@ class Board:
     left_black_rook_made_move = False
     right_black_rook_made_move = False
     movesHistory = [((-1,-1),(-1,-1))]
+    player2 = None
     
     requestedPromotionFigure = None
 

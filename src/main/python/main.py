@@ -25,16 +25,18 @@ def game_logic(gui, player1, player2, board):
         gui.draw_pieces()
         pygame.display.flip()
 
-        move = input("Podaj swój ruch (np. 'e2 e4'): ")
-        #move = extractMove(recognizeSpeech())
-
-
+        # move = input("Podaj swój ruch (np. 'e2 e4'): ")
+        move = getMoveFromSpeech(board)
+        if not move:
+            continue
+        print(move)
         start_position, end_position = parse_move(move)
+        endPositionPiece = board.get_piece(end_position)
 
         if player1.make_move(board, (start_position, end_position)):
             print("Poprawny ruch!")
             ##########speak(getComment(move[3:]))
-            board.movesHistory.append((start_position, end_position))
+            board.movesHistory.append((start_position, end_position, endPositionPiece))
             board.specialMoves(player1)
 
         else:
@@ -72,6 +74,7 @@ def main():
     board = Board()
     player1 = Player(Color.WHITE)
     player2 = RandomAIPlayer(Color.BLACK)
+    board.player2 = player2
     gui = ChessGUI(board, player1, player2)
 
     game_logic_thread = threading.Thread(target=game_logic, args=(gui, player1, player2, board))
