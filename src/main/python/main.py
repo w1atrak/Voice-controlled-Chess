@@ -25,8 +25,8 @@ def game_logic(gui, player1, player2, board):
         gui.draw_pieces()
         pygame.display.flip()
 
-        # move = input("Podaj swój ruch (np. 'e2 e4'): ")
-        move = getMoveFromSpeech(board)
+        move = input("Podaj swój ruch (np. 'e2 e4'): ")
+        # move = getMoveFromSpeech(board)
         if not move:
             continue
         print(move)

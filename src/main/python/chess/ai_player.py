@@ -11,6 +11,11 @@ class AIPlayer(Player):
 
     def minimax(self, board, depth, alpha, beta, maximizing_player):
         best_move = None
+        if not depth:
+            if maximizing_player:
+                return float('inf'), None
+            else: 
+                return float('-inf'), None
 
         if maximizing_player:
             max_eval = float('-inf')

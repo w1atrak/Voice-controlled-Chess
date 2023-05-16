@@ -2,7 +2,6 @@ from chess.piece import *
 from chess.game_rules import GameRules
 from chess.player import Player, Color
 from voice_control.s_recognition import requestPromFigure
-from main import getBoardValue
 
 class Board:
 
@@ -112,6 +111,25 @@ class Board:
             self.requestedPromotionFigure = None
         
         return None
+    
+    def evaluate_board(self):
+        piece_values = {
+            'P': 10, 'N': 30, 'B': 30, 'R': 50, 'Q': 90, 'K': 900,
+            'p': -10, 'n': -30, 'b': -30, 'r': -50, 'q': -90, 'k': -900
+        }
+        
+        board_value = 0
+
+        for row in range(8):
+            for col in range(8):
+                piece = self.get_piece((row, col))
+                if piece:
+                    board_value += piece_values[piece.symbol()]
+
+        return board_value
+    
+    def getBoardValue(self):
+        return self.evaluate_board()
 
     def provideHintMove(self):
         bestMove = None
@@ -126,7 +144,7 @@ class Board:
                                 taken = self[endRow][endCol]
                                 self[endRow][endCol] = piece
                                 self[startRow][startCol] = None
-                                val = getBoardValue(self) 
+                                val = self.getBoardValue(self) 
                                 if val < bestVal:
                                     bestVal = val
                                     bestMove = [(startRow, startCol), (endRow, endCol)]
