@@ -30,9 +30,9 @@ def cutSpaces(result):
 
 
 def extractKeyWords(results, board, savedMatchings = []): 
+    print(results, "s_reco/extractKeyWords")
     if not results or not results['alternative']:
         return None
-    print(results, "s_reco/extractKeyWords")
 
     keyWords = ["cofnij", 
                 "pionek", "pion", 
@@ -264,6 +264,11 @@ def recognizeSpeech():
 
 def getMoveFromSpeech(board):
     return extractKeyWords(recognizeSpeech(), board)
+
+def getMoveFromText(text, board):
+    mock = {'alternative': [{'transcript': text}]}
+    
+    return extractKeyWords(mock, board)
 
 
 
