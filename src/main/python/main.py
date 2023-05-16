@@ -4,7 +4,7 @@ import threading
 
 from chess.board import Board
 from chess.player import Color, Player
-from chess.ai_player import AIPlayer
+from chess.ai_player import AIPlayer, AIPlayerMC
 from chess.random_ai_player import RandomAIPlayer
 from chess.game_rules import GameRules
 from chess.gui import ChessGUI
@@ -82,13 +82,13 @@ def game_logic(gui, player1, player2, board):
 
 def getBoardValue(board):
     aiplayer = AIPlayer(Color.BLACK)
-    return aiplayer.evaluate_board(board)
+    return aiplayer.evaluate_board(board, Color.BLACK)
 
 
 def main():
     board = Board()
     player1 = Player(Color.WHITE)
-    player2 = RandomAIPlayer(Color.BLACK)
+    player2 = AIPlayer(Color.BLACK)
     board.player2 = player2
     gui = ChessGUI(board, player1, player2)
 
