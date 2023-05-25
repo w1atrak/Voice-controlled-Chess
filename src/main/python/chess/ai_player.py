@@ -5,6 +5,115 @@ import time
 from chess.board import Board
 from chess.player import Player, Color
 from chess.game_rules import GameRules
+from chess.piece import Pawn, Knight, Bishop, Rook, Queen, King
+
+class SimpleAIPlayer(Player):
+    movesHistory = []
+
+    CENTRAL_SQUARES = [(3, 3), (3, 4), (4, 3), (4, 4)]
+
+    def make_move(self, board):
+        moves_scores = [(move, self.evaluate_move(board, move)) for move in self.get_legal_moves(board, Color.BLACK)]
+        move = max(moves_scores, key=lambda x: x[1])[0]
+        piece = board.make_move(*move)
+        self.movesHistory.append((move[0], move[1], piece))
+        return move
+
+    def undoMove(self, board):
+        lastMove = self.movesHistory.pop()
+        board.undo_move(lastMove[0], lastMove[1], lastMove[2])
+
+    def evaluate_move(self, board, move):
+        board_copy = copy.deepcopy(board)
+        board_copy.make_move(*move)
+        piece = board_copy.get_piece(move[1])
+
+        pawn_score = 5 if isinstance(piece, Pawn) else 0
+
+        capturing_score = self.get_piece_value(piece) if piece else 0
+
+        central_control_score = 1 if move[1] in self.CENTRAL_SQUARES else 0
+
+        safety_score = -1 if self.is_in_check(board_copy) else 0
+
+        pawn_structure_score = self.pawn_structure_score(board_copy)
+
+        piece_activity_score = self.piece_activity_score(board_copy, move)
+
+        blunder_score = self.blunder_score(board, move)
+
+        total_score = pawn_score + capturing_score + central_control_score + safety_score + pawn_structure_score + piece_activity_score + blunder_score
+        normalized_score = total_score / (self.get_max_piece_value() + 5)
+
+        return normalized_score
+
+    def is_in_check(self, board):
+        return GameRules.is_check(board, self.color)
+
+    def pawn_structure_score(self, board):
+        score = 0
+        for row in range(8):
+            for col in range(8):
+                piece = board.get_piece((row, col))
+                if isinstance(piece, Pawn) and piece.color == self.color:
+                    # check if the pawn is protected by another pawn
+                    if (0 <= row + 1 < 8 and 0 <= col - 1 < 8 and isinstance(board.get_piece((row + 1, col - 1)), Pawn) and board.get_piece((row + 1, col - 1)).color == self.color) or (0 <= row + 1 < 8 and 0 <= col + 1 < 8 and isinstance(board.get_piece((row + 1, col + 1)), Pawn) and board.get_piece((row + 1, col + 1)).color == self.color):
+                        score += 1
+        return score
+
+    def piece_activity_score(self, board, move):
+        score = 0
+        piece = board.get_piece(move[1])
+        for row in range(8):
+            for col in range(8):
+                if (row, col) != move[1] and board.is_valid_move(piece, move[1], (row, col)):
+                    score += 1
+        return score
+    
+    def blunder_score(self, board, move):
+        board_copy = copy.deepcopy(board)
+        board_copy.make_move(*move)
+
+        # Change turn to opponent
+        opponent_color = Color.WHITE if self.color == Color.BLACK else Color.BLACK
+
+        opponent_moves = self.get_legal_moves(board_copy, opponent_color)
+        score = 0
+        for opponent_move in opponent_moves:
+            captured_piece = board_copy.get_piece(opponent_move[1])
+            if captured_piece and captured_piece.color == self.color:
+                # Penalize blunder heavily
+                score -= self.get_piece_value(captured_piece) * 2
+        return score
+
+
+    def get_piece_value(self, piece):
+        if isinstance(piece, Pawn):
+            return 1
+        elif isinstance(piece, Knight) or isinstance(piece, Bishop):
+            return 3
+        elif isinstance(piece, Rook):
+            return 5
+        elif isinstance(piece, Queen):
+            return 9
+        else:
+            return 0
+
+    def get_max_piece_value(self):
+        return 9  # max value is for the queen
+
+    def get_legal_moves(self, board, color):
+        legal_moves = []
+        for row in range(8):
+            for col in range(8):
+                piece = board.get_piece((row, col))
+                if piece and piece.color == color:
+                    for end_row in range(8):
+                        for end_col in range(8):
+                            if board.is_valid_move(piece, (row, col), (end_row, end_col)):
+                                legal_moves.append(((row, col), (end_row, end_col)))
+        return legal_moves
+
 
 class AIPlayerMC(Player):
     def __init__(self, color, time_limit=2, max_moves=100):
