@@ -116,12 +116,12 @@ def extractKeyWords(results, board, savedMatchings = []):
 
 
 def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
-    if matchings["cofnij"] and len(board.movesHistory) > 1:
+    if matchings["cofnij"] and len(board.movesHistory) > 2:
+        for i in range(2):
             lastMove = board.movesHistory.pop()
             board.undo_move(lastMove[0], lastMove[1], lastMove[2])
-            board.player2.undoMove(board)
             
-            return extractKeyWords(recognizeSpeech(), board)
+        return extractKeyWords(recognizeSpeech(), board)
             
     
 #

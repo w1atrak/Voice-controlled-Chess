@@ -8,7 +8,6 @@ from chess.game_rules import GameRules
 from chess.piece import Pawn, Knight, Bishop, Rook, Queen, King
 
 class SimpleAIPlayer(Player):
-    movesHistory = []
 
     CENTRAL_SQUARES = [(3, 3), (3, 4), (4, 3), (4, 4)]
 
@@ -16,7 +15,7 @@ class SimpleAIPlayer(Player):
         moves_scores = [(move, self.evaluate_move(board, move)) for move in self.get_legal_moves(board, Color.BLACK)]
         move = max(moves_scores, key=lambda x: x[1])[0]
         piece = board.make_move(*move)
-        self.movesHistory.append((move[0], move[1], piece))
+        board.movesHistory.append((move[0], move[1], piece))
         return move
 
     def undoMove(self, board):
