@@ -67,6 +67,7 @@ def extractKeyWords(results, board, savedMatchings = []):
 
         startPos = ''
         endPos = ''
+        mainPiece = None
 
         for word in map(lambda x: x.lower(), result.split()):
             if word in keyWords: 
@@ -215,7 +216,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             return result_pos
             
         else:
-            speak("Zaproponowany ruch jest niejednoznaczny lub niepoprawny, proszę o doprecyzowanie")
+            speak("Przepraszam, nie zrozumiałem ruchu. Spróbuj jeszcze raz.")
             return extractKeyWords( recognizeSpeech(), board )
 
 # 

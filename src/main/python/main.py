@@ -25,9 +25,11 @@ def game_logic(gui, player1, player2, board):
         gui.draw_pieces()
         pygame.display.flip()
 
-        txt = input("Podaj swój ruch (np. 'e2 e4'): ")
-        # move = getMoveFromSpeech(board)
-        move = getMoveFromText(txt, board)
+        # txt = input("Podaj swój ruch (np. 'e2 e4'): ")        # text input just like speech
+        # move = getMoveFromText(txt, board)
+        
+        move = getMoveFromSpeech(board)         # speech input
+        
         if not move:
             continue
         print(move)

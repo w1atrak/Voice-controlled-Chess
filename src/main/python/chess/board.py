@@ -2,6 +2,8 @@ from chess.piece import *
 from chess.game_rules import GameRules
 from chess.player import Player, Color
 from voice_control.s_recognition import requestPromFigure
+import json, os
+CUSTOM = True
 
 class Board:
 
@@ -71,21 +73,33 @@ class Board:
         return king_position
 
     def setup_pieces(self):
-        for row, color in [(0, Color.BLACK), (7, Color.WHITE)]:
-            self.board[row] = [
-                Rook(color),
-                Knight(color),
-                Bishop(color),
-                Queen(color),
-                King(color),
-                Bishop(color),
-                Knight(color),
-                Rook(color)
-            ]
+        
+        if not CUSTOM:
+            for row, color in [(0, Color.BLACK), (7, Color.WHITE)]:
+                self.board[row] = [
+                    Rook(color),
+                    Knight(color),
+                    Bishop(color),
+                    Queen(color),
+                    King(color),
+                    Bishop(color),
+                    Knight(color),
+                    Rook(color)
+                ]
 
-        for row, color in [(1, Color.BLACK), (6, Color.WHITE)]:
-            for col in range(8):
-                self.board[row][col] = Pawn(color)
+            for row, color in [(1, Color.BLACK), (6, Color.WHITE)]:
+                for col in range(8):
+                    self.board[row][col] = Pawn(color)
+        else:
+            with open(os.path.abspath('./src/main/resources/config/config.json')) as f:
+                data = json.load(f)
+                
+                for figure in data['white']:
+                    self.board[figure[1]][ figure[2]] = eval(figure[0])(Color.WHITE)
+                    
+                for figure in data['black']:
+                    self.board[figure[1]][ figure[2]] = eval(figure[0])(Color.BLACK)
+
 
 
     def specialMoves(self, player):
