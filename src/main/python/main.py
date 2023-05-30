@@ -1,4 +1,5 @@
 import sys
+import queue
 import pygame
 import threading
 
@@ -12,7 +13,7 @@ from chess.gui import ChessGUI
 from voice_control.s_recognition import *
 from commentary.commentator import *
 
-def game_logic(gui, player1, player2, board):
+def game_logic(gui, player1, player2, board, recognizer):
     game_over = False
 
     while not game_over:
@@ -28,7 +29,13 @@ def game_logic(gui, player1, player2, board):
         # txt = input("Podaj swój ruch (np. 'e2 e4'): ")        # text input just like speech
         # move = getMoveFromText(txt, board)
         
-        move = getMoveFromSpeech(board)         # speech input
+        q = queue.Queue()
+
+        speech_thread = threading.Thread(target=getMoveFromSpeech, args=(board, recognizer, q))
+        speech_thread.start()
+        speech_thread.join()
+
+        move = q.get()
         
         if not move:
             continue
@@ -92,9 +99,10 @@ def main():
     player1 = Player(Color.WHITE)
     player2 = SimpleAIPlayer(Color.BLACK)
     board.player2 = player2
-    gui = ChessGUI(board, player1, player2)
+    recognizer = CustomRecognizer()
+    gui = ChessGUI(board, player1, player2, recognizer)
 
-    game_logic_thread = threading.Thread(target=game_logic, args=(gui, player1, player2, board))
+    game_logic_thread = threading.Thread(target=game_logic, args=(gui, player1, player2, board, recognizer))
     game_logic_thread.start()
 
     gui.run()

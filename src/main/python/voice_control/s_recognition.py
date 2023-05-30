@@ -29,7 +29,7 @@ def cutSpaces(result):
 
 
 
-def extractKeyWords(results, board, savedMatchings = []): 
+def extractKeyWords(results, board, recognizer, savedMatchings = []): 
     print(results, "s_reco/extractKeyWords")
     if not results or not results['alternative']:
         return None
@@ -110,18 +110,18 @@ def extractKeyWords(results, board, savedMatchings = []):
         piece = King(Color.WHITE)
 
     print(positionsInterpreted, "pos")
-    return analyzeKeyWords(matchings, board, positionsInterpreted, positions, piece)
+    return analyzeKeyWords(matchings, board, positionsInterpreted, positions, piece, recognizer)
         
 
 
 
-def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
+def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece, recognizer):
     if matchings["cofnij"] and len(board.movesHistory) > 2:
         for i in range(2):
             lastMove = board.movesHistory.pop()
             board.undo_move(lastMove[0], lastMove[1], lastMove[2])
             
-        return extractKeyWords(recognizeSpeech(), board)
+        return extractKeyWords(recognizeSpeech(recognizer), board, recognizer)
             
     
 #
@@ -136,14 +136,14 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
     if matchings['roszada']:
         if board.white_king_made_move or ( board.left_white_rook_made_move and board.right_white_rook_made_move ):
             speak("roszada nie jest możliwa")
-            return extractKeyWords(recognizeSpeech(), board)
+            return extractKeyWords(recognizeSpeech(recognizer), board, recognizer)
         
         castlings = GameRules.possibleCastlings(board)
 
         if matchings['krótka']:
             if not "rightWhite" in castlings:
                 speak("roszada krótka nie jest możliwa")
-                return extractKeyWords(recognizeSpeech(), board)    
+                return extractKeyWords(recognizeSpeech(recognizer), board, recognizer)    
             else:
                 speak("roszada krótka")
                 return "e1 g1"
@@ -151,7 +151,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
         if matchings['długa']:
             if not "leftWhite" in castlings:
                 speak("roszada długa nie jest możliwa")
-                return extractKeyWords(recognizeSpeech(), board)
+                return extractKeyWords(recognizeSpeech(recognizer), board, recognizer)
             else:
                 speak("roszada długa")
                 return "e1 c1"
@@ -171,7 +171,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
         res = GameRules.transit(positions, board)
         if not res:
             speak("nie ma takiego przelotu")
-            return extractKeyWords(recognizeSpeech(), board)
+            return extractKeyWords(recognizeSpeech(recognizer), board, recognizer)
         else:
             return res
 
@@ -182,7 +182,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
       
         res = GameRules.movesThatWillResultInCheck(board, piece, positions)
         if not res: 
-            return extractKeyWords(recognizeSpeech(), board)
+            return extractKeyWords(recognizeSpeech(recognizer), board, recognizer)
         if len(res) == 1:
             return res[0] + " " + positions
 
@@ -202,7 +202,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             
         else:
             speak("Doprecyzuj na co promować")
-            extractKeyWords( recognizeSpeech(), ["promowanie"])
+            extractKeyWords( recognizeSpeech(recognizer), ["promowanie"], recognizer)
 
 
 #
@@ -217,7 +217,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             
         else:
             speak("Przepraszam, nie zrozumiałem ruchu. Spróbuj jeszcze raz.")
-            return extractKeyWords( recognizeSpeech(), board )
+            return extractKeyWords( recognizeSpeech(recognizer), board, recognizer )
 
 # 
     else:
@@ -241,35 +241,45 @@ def requestPromFigure():
                 "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]
     matchings = {x: 0 for x in keyWords}
     matchings["prom"] = 1
-    return analyzeKeyWords(matchings, board=None,positionsInterpreted=0,positions=None,piece=None)
+    return analyzeKeyWords(matchings, board=None,positionsInterpreted=0,positions=None,piece=None, recognizer=None)
+
+import speech_recognition as sr
+
+class CustomRecognizer(sr.Recognizer):
+    is_listening = False
+
+    def listen(self, source, timeout=None):
+        self.is_listening = True
+        audio = super().listen(source, timeout)
+        self.is_listening = False
+        return audio
 
 
-
-
-def recognizeSpeech():
-
-    r = sr.Recognizer()
+def recognizeSpeech(recognizer):
+    if recognizer is None:
+        recognizer = CustomRecognizer()
     print(sr.Microphone())
     with sr.Microphone() as source:
-        r.adjust_for_ambient_noise(source)
+        recognizer.adjust_for_ambient_noise(source)
         print("Say something!")
-        audio = r.listen(source)
+        audio = recognizer.listen(source)
     try:
-        return r.recognize_google(audio, language='pl_PL', show_all=True)
+        return recognizer.recognize_google(audio, language='pl_PL', show_all=True)
     except sr.UnknownValueError:
         print("Google Speech Recognition could not understand audio")
     except sr.RequestError as e:
         print("Could not request results from Google Speech Recognition service; {0}".format(e))
+    recognizer.is_listening = False
 
 
 
-def getMoveFromSpeech(board):
-    return extractKeyWords(recognizeSpeech(), board)
+def getMoveFromSpeech(board, recognizer, q):
+    q.put(extractKeyWords(recognizeSpeech(recognizer), board, recognizer))
 
 def getMoveFromText(text, board):
     mock = {'alternative': [{'transcript': text}]}
     
-    return extractKeyWords(mock, board)
+    return extractKeyWords(mock, board, None)
 
 
 

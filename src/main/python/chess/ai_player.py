@@ -13,7 +13,7 @@ class SimpleAIPlayer(Player):
 
     def make_move(self, board):
         moves_scores = [(move, self.evaluate_move(board, move)) for move in self.get_legal_moves(board, Color.BLACK)]
-        move = sorted(moves_scores, key=lambda x: -x[1])[0]
+        move = sorted(moves_scores, key=lambda x: -x[1])[0][0]
         piece = board.make_move(*move)
         board.movesHistory.append((move[0], move[1], piece))
         return move
