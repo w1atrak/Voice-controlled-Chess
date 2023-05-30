@@ -1,27 +1,10 @@
 {
-    "a3": "Czy to już czas na bunt pionków? Pionek na a3 wygląda na lidera ruchu!",
-    "b3": "B3 to pole, na którym król jest bezpieczny... o ile pionek go nie zje!",
-    "c3": "C3 to idealne miejsce na piknik dla pionków - jest tam dużo miejsca na jedzenie!",
-    "d3":   "D3 to pole pełne tajemnic - czy pionek może tam bezpiecznie przejść, czy też zostanie pochłonięty przez przeciwnika?"  ,
-    "e3":  "E3 - pionek stoi, przeciwnik stoi... nuda!" ,
-    "f3": "F3 to pole, na którym pionki czują się jak w Hollywood - wszyscy chcą tam być!"  ,
-    "g3":  "G3 to pole, na którym pionek może poczuć się jak w domu - w końcu to jego 'g'-niazdo!" ,
-    "h3":  "H3 to pole, na którym pionek może poczuć się jak książę - a w końcu każdy pionek marzy o zostaniu damą!" ,
     
-    "a4":  " A4 - jak głosi przysłowie: 'A gdzież tam A, jak się ma H na 8'!B4 to pole, na którym pionek może poczuć się jak ptak - w końcu może 'zabić dwie wieże jednym ruchem'! " ,
-    "c4":  " C4 - czy to już czas na małe wakacje pionków? " ,
-    "d4":  " D4 to pole, na którym czeka na pionka specjalna nagroda - awans na damę! " ,
-    "e4":  " E4 - czy to już czas na otwarcie 'szachowej' sezonu? " ,
-    "f4":  " F4 to pole, na którym pionek może poczuć się jak młody buntownik - czas pokazać przeciwnikowi, kto tu rządzi! " ,
-    "g4":  " G4 to pole, na którym pionek może poczuć się jak król - w końcu ma pod sobą całą linię! " ,
-    "h4":  " H4 to pole, na którym pionek może poczuć się jak na środku salonu - wszyscy patrzą na niego! " ,
 
     "default" : [
         "Ten ruch to jak strzał w ciemno - może się okazać strzałem w dziesiątkę, a może i w stopę!",
         "Jeśli to jest próba zaskoczenia przeciwnika, to powiedziałbym, że jest całkiem... zaskakująca.",
         "Takie posunięcie to jak podejście do zdrady - albo wyjdzie, albo będzie gorzej niż było.",
-        "Jeśli ktoś pomyśli, że to dobry ruch, to chyba tak samo myśli jak człowiek, który próbuje sprzedać lodówkę na biegunie.",
-        "To posunięcie to jak próba przeskoczenia granicy w zamaskowanym czołgu - trochę niezgrabne i widać, że coś się dzieje, ale czy uda się przekroczyć granicę, to już inna kwestia.",
         "łaał"
     ]
 

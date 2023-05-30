@@ -13,7 +13,7 @@ def getComment(position, piece = ""):
 
         if r < 10: 
             return ""
-        if r < 60: 
+        if r < 50: 
             default = data["default"]
             i = random.randint(0, len(default)-1)
             return default[i]
