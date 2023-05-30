@@ -44,10 +44,7 @@ def game_logic(gui, player1, player2, board):
             
             prevVal = board.value
             newVal = getBoardValue(board)
-            if newVal < prevVal:
-                speak("Dobry ruch")
-            elif newVal > prevVal:
-                speak("Czy to na pewno był dobry ruch?")
+            
                 
             board.value = newVal
 
@@ -88,7 +85,7 @@ def getBoardValue(board):
 
 
 def main():
-    board = Board()
+    board = Board(True, 'prom.json')
     player1 = Player(Color.WHITE)
     player2 = SimpleAIPlayer(Color.BLACK)
     board.player2 = player2

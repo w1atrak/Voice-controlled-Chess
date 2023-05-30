@@ -117,10 +117,19 @@ def extractKeyWords(results, board, savedMatchings = []):
 
 def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
     if matchings["cofnij"] and len(board.movesHistory) > 2:
+        
         for i in range(2):
             lastMove = board.movesHistory.pop()
+            print(lastMove)
             board.undo_move(lastMove[0], lastMove[1], lastMove[2])
-            
+            if len(lastMove) > 3:
+                board.white_king_made_move = False
+                if lastMove[3] == (7,7):
+                    board.white_king_made_move = False
+                if lastMove[3] == (7,0):
+                    board.left_white_rook_made_move = False
+                board.undo_move(lastMove[3], lastMove[4], lastMove[5])
+                
         return extractKeyWords(recognizeSpeech(), board)
             
     
@@ -139,7 +148,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             return extractKeyWords(recognizeSpeech(), board)
         
         castlings = GameRules.possibleCastlings(board)
-
+        
         if matchings['krótka']:
             if not "rightWhite" in castlings:
                 speak("roszada krótka nie jest możliwa")
@@ -198,11 +207,12 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
 
         if piece:
             board.requestedPromotionFigure = piece
-            speak("promowanie na " + piece.symbol())
+            speak("promowanie ")
+            return None
             
         else:
             speak("Doprecyzuj na co promować")
-            extractKeyWords( recognizeSpeech(), ["promowanie"])
+            extractKeyWords( recognizeSpeech(), board,  ["promowanie"])
 
 
 #
@@ -220,13 +230,11 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece):
             return extractKeyWords( recognizeSpeech(), board )
 
 # 
-    else:
-        speak("nie rozpoznano ruchu")
 
     return None
 
 
-def requestPromFigure():
+def requestPromFigure(board):
     keyWords = ["cofnij", 
                 "pionek", "pion", 
                 "wieża", "wieżę", 
@@ -241,7 +249,7 @@ def requestPromFigure():
                 "prom", "promowanie", "przemiana", "awans", "koronacja", "hetmanowanie", "promuję", "promuje"]
     matchings = {x: 0 for x in keyWords}
     matchings["prom"] = 1
-    return analyzeKeyWords(matchings, board=None,positionsInterpreted=0,positions=None,piece=None)
+    return analyzeKeyWords(matchings, board,positionsInterpreted=0,positions=None,piece=None)
 
 
 

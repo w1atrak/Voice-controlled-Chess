@@ -3,7 +3,7 @@ from chess.game_rules import GameRules
 from chess.player import Player, Color
 from voice_control.s_recognition import requestPromFigure
 import json, os
-CUSTOM = True
+
 
 class Board:
 
@@ -20,8 +20,10 @@ class Board:
     
     requestedPromotionFigure = None
 
-    def __init__(self):
+    def __init__(self, custom = False, customPath = 'config.json'):
         self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.custom = custom
+        self.customPath = customPath
         self.setup_pieces()
 
     def __str__(self):
@@ -59,6 +61,8 @@ class Board:
         end_row, end_col = end_position
         self.board[start_row][start_col] = self.board[end_row][end_col]
         self.board[end_row][end_col] = captured_piece
+        
+        
 
     def find_king(self, king_color):
         king_position = None
@@ -74,7 +78,7 @@ class Board:
 
     def setup_pieces(self):
         
-        if not CUSTOM:
+        if not self.custom:
             for row, color in [(0, Color.BLACK), (7, Color.WHITE)]:
                 self.board[row] = [
                     Rook(color),
@@ -91,7 +95,7 @@ class Board:
                 for col in range(8):
                     self.board[row][col] = Pawn(color)
         else:
-            with open(os.path.abspath('./src/main/resources/config/config.json')) as f:
+            with open(os.path.abspath('./src/main/resources/config/' + self.customPath)) as f:
                 data = json.load(f)
                 
                 for figure in data['white']:
@@ -108,19 +112,24 @@ class Board:
         lastMove = self.movesHistory[-1]
         startPos = lastMove[0] 
         endPos = lastMove[1]
+        print(self.movesHistory)
         print(lastMove)
         if isinstance(self.get_piece(endPos), King):
             if endPos == (7,6) and startPos == (7,4):
                 player.make_move(self, ((7,7),(7,5)))
+                self.movesHistory.pop()
+                self.movesHistory.append([(7,4),(7,6), None,(7,7),(7,5), None])
+                
                 return "h1 f1"
             if endPos == (7,2) and startPos == (7,4):
                 player.make_move(self, ((7,0),(7,3)))
                 return "a1 d1"
             
+        
         # promowanie po ruchu pionka na ostatnie pole
         if not endPos[0] and isinstance(self.get_piece(endPos), Pawn):
             if not self.requestedPromotionFigure:
-                requestPromFigure()
+                requestPromFigure(self)
             self.board[endPos[0]][endPos[1]] = self.requestedPromotionFigure
             self.requestedPromotionFigure = None
         

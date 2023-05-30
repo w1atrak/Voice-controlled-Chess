@@ -89,11 +89,12 @@ class Rook(Piece):
         if start_row != end_row and start_col != end_col:
             return False
         if isinstance(board.get_piece(board.movesHistory[-1][1]), King):
-            if start_position == (7,7) and end_position == (7,5) and board.movesHistory[-1] == ((7,4),(7,6)): 
+            print("był King")
+            if start_position == (7,7) and end_position == (7,5) and board.movesHistory[-1][:2] == ((7,4),(7,6)): 
                 return not board.right_white_rook_made_move
-            if start_position == (7,0) and end_position == (7,3) and board.movesHistory[-1] == ((7,4),(7,2)): 
+            if start_position == (7,0) and end_position == (7,3) and board.movesHistory[-1][:2] == ((7,4),(7,2)): 
                 return not board.left_white_rook_made_move
-            
+        print("kurczaczki")
         return GameRules.is_path_clear(start_position, end_position, board)
 
 
