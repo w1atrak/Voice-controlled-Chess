@@ -9,17 +9,17 @@ class GameRules:
         color = board.get_piece(lastMove[1]).color
         x = lastMove[1][1]
         
-        if color == color.BLACK:
+        if color == Color.BLACK:
             if lastMove[0][0] == 1 and lastMove[1][0] == 3:
                 for i in range(8):
-                    if board.get_piece((3,i)) and board.get_piece((3,i)).piece_type == 'pawn' and board.get_piece((3,i)).color == color.WHITE:
+                    if board.get_piece((3,i)) and board.get_piece((3,i)).piece_type == 'pawn' and board.get_piece((3,i)).color == Color.WHITE:
                         if position and position != GameRules.parse_tuple_position((3,i)):
                             return False
                         return GameRules.parse_tuple_position((3,i)) + ' ' + GameRules.parse_tuple_position((2,x))
-        if color == color.WHITE:
+        if color == Color.WHITE:
             if lastMove[0][0] == 6 and lastMove[1][0] == 4:
                 for i in range(8):
-                    if board.get_piece((4,i)) and board.get_piece((4,i)).piece_type == 'pawn' and board.get_piece((4,i)).color == color.BLACK:
+                    if board.get_piece((4,i)) and board.get_piece((4,i)).piece_type == 'pawn' and board.get_piece((4,i)).color == Color.BLACK:
                         if position and position != GameRules.parse_tuple_position((4,i)):
                             return False
                         return GameRules.parse_tuple_position((4,i)) + ' ' + GameRules.parse_tuple_position((5,x))
@@ -120,7 +120,15 @@ class GameRules:
         if destination_piece and destination_piece.color == piece.color:
             return False
         
-        return piece.is_valid_move(start_position, end_position, board) 
+        if piece.is_valid_move(start_position, end_position, board):
+            # Sprawdź, czy ruch spowoduje szachowanie własnego króla
+            captured_piece = board.make_move(start_position, end_position)
+            is_in_check = GameRules.is_check(board, piece.color)
+            board.undo_move(start_position, end_position, captured_piece)
+            if is_in_check:
+                return False
+            return True
+        return False
 
     
     @staticmethod

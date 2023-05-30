@@ -3,7 +3,7 @@ from chess.game_rules import GameRules
 from chess.player import Player, Color
 from voice_control.s_recognition import requestPromFigure
 import json, os
-CUSTOM = True
+CUSTOM = False
 
 class Board:
 
@@ -65,7 +65,7 @@ class Board:
         for row in range(8):
             for col in range(8):
                 piece = self.get_piece((row, col))
-                if piece and piece.color == king_color and piece is King:
+                if piece and piece.color == king_color and isinstance(piece, King):  # poprawiony warunek
                     king_position = (row, col)
                     break
             if king_position:
@@ -95,10 +95,10 @@ class Board:
                 data = json.load(f)
                 
                 for figure in data['white']:
-                    self.board[figure[1]][ figure[2]] = eval(figure[0])(Color.WHITE)
+                    self.board[figure[1]][figure[2]] = eval(figure[0] + '(Color.WHITE)')  # poprawiony eval
                     
                 for figure in data['black']:
-                    self.board[figure[1]][ figure[2]] = eval(figure[0])(Color.BLACK)
+                    self.board[figure[1]][figure[2]] = eval(figure[0] + '(Color.BLACK)')  # poprawiony eval
 
 
 
@@ -128,8 +128,7 @@ class Board:
     
     def evaluate_board(self):
         piece_values = {
-            'P': 10, 'N': 30, 'B': 30, 'R': 50, 'Q': 90, 'K': 900,
-            'p': -10, 'n': -30, 'b': -30, 'r': -50, 'q': -90, 'k': -900
+            Pawn: 10, Knight: 30, Bishop: 30, Rook: 50, Queen: 90, King: 900,
         }
         
         board_value = 0
@@ -138,7 +137,7 @@ class Board:
             for col in range(8):
                 piece = self.get_piece((row, col))
                 if piece:
-                    board_value += piece_values[piece.symbol()]
+                    board_value += piece_values[type(piece)] * (1 if piece.color == Color.WHITE else -1)  # poprawiona wartość
 
         return board_value
     

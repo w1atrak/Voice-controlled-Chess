@@ -13,7 +13,7 @@ class SimpleAIPlayer(Player):
 
     def make_move(self, board):
         moves_scores = [(move, self.evaluate_move(board, move)) for move in self.get_legal_moves(board, Color.BLACK)]
-        move = max(moves_scores, key=lambda x: x[1])[0]
+        move = sorted(moves_scores, key=lambda x: -x[1])[0]
         piece = board.make_move(*move)
         board.movesHistory.append((move[0], move[1], piece))
         return move
@@ -110,9 +110,12 @@ class SimpleAIPlayer(Player):
                     for end_row in range(8):
                         for end_col in range(8):
                             if board.is_valid_move(piece, (row, col), (end_row, end_col)):
-                                legal_moves.append(((row, col), (end_row, end_col)))
+                                board_copy = copy.deepcopy(board)
+                                captured_piece = board_copy.make_move((row, col), (end_row, end_col))
+                                if not GameRules.is_check(board_copy, color):
+                                    legal_moves.append(((row, col), (end_row, end_col)))
+                                board_copy.undo_move((row, col), (end_row, end_col), captured_piece)
         return legal_moves
-
 
 class AIPlayerMC(Player):
     def __init__(self, color, time_limit=2, max_moves=100):
