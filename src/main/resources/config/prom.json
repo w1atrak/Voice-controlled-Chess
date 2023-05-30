@@ -1,0 +1,31 @@
+{
+    "white": [
+        ["King",7,4] ,
+        ["Rook", 7,7],
+        ["Rook", 7, 0],
+        ["Knight", 7, 1],
+        ["Knight", 7, 6],
+        ["Bishop", 7, 2],
+        ["Bishop", 7, 5],
+        ["Queen", 7, 3],
+        ["Pawn", 6, 0],
+        ["Pawn", 6, 1],
+        ["Pawn", 6, 5],
+        ["Pawn", 6, 6],
+        ["Pawn", 6, 7],
+        ["Pawn", 1,7]
+    ],
+    "black": [
+        ["Rook", 0, 0],
+        ["Knight", 0, 1],
+        ["Bishop", 0, 2],
+        ["Queen", 0, 3],
+        ["King", 0, 4],
+        ["Pawn", 1, 0],
+        ["Pawn", 1, 1],
+        ["Pawn", 1, 2],
+        ["Pawn", 1, 3]
+
+    ]
+
+}
