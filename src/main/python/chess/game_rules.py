@@ -1,5 +1,5 @@
-from chess.piece import King, Piece
-from chess.player import Color
+# from chess.piece import King, Piece
+# from chess.player import Color
 
 class GameRules:
 

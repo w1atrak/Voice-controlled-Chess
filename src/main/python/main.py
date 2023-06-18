@@ -26,8 +26,8 @@ def game_logic(gui, player1, player2, board, recognizer):
         gui.draw_pieces()
         pygame.display.flip()
 
-        # txt = input("Podaj swój ruch (np. 'e2 e4'): ")        # text input just like speech
-        # move = getMoveFromText(txt, board)
+        txt = input("Podaj swój ruch (np. 'e2 e4'): ")        # text input just like speech
+        move = getMoveFromText(txt, board)
         
         q = queue.Queue()
 
@@ -35,7 +35,7 @@ def game_logic(gui, player1, player2, board, recognizer):
         speech_thread.start()
         speech_thread.join()
 
-        move = q.get()
+        # move = q.get()
         
         if not move:
             continue
@@ -92,8 +92,8 @@ def getBoardValue(board):
 
 
 def main():
-    board = Board(True, 'prom.json')
-    board = Board(True, 'castlings.json')
+    # board = Board(True, 'castlings.json')
+    # board = Board(True, 'prom.json')
     board = Board(False, '')
     player1 = Player(Color.WHITE)
     player2 = SimpleAIPlayer(Color.BLACK)

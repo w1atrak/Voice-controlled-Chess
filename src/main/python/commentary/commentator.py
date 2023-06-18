@@ -3,7 +3,7 @@ import json
 import random
 
 
-def getComment(position, piece = ""):
+def getComment(position, noCommentProbability = 10):
     path = Path(__file__,'..').resolve()
     
     with open(path.joinpath("commentary_data.json") , "r", encoding="utf-8") as f:
@@ -11,7 +11,7 @@ def getComment(position, piece = ""):
 
         r = random.randint(0,100)
 
-        if r < 10: 
+        if r < noCommentProbability: 
             return ""
         if r < 50: 
             default = data["default"]
@@ -23,5 +23,4 @@ def getComment(position, piece = ""):
         
             return data[position]
         
-
 

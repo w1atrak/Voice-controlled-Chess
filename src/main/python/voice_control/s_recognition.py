@@ -1,14 +1,14 @@
 
 import speech_recognition as sr
 import re
-from voice_control.s_synthesis import speak
-from chess.game_rules import *
-from chess.piece import *
+# from voice_control.s_synthesis import speak
+# from chess.game_rules import *
+# from chess.piece import *
 
 
 
 
-def string_NumbersToNumbers(s):  
+def stringNumbersToNumbers(s):  
     return s.replace('jeden', '1').replace('dwa', '2').replace('trzy', '3').replace('cztery', '4').replace('pięć', '5').replace('sześć', '6').replace('siedem', '7').replace('osiem', '8')
 
 
@@ -23,8 +23,11 @@ def cutSpaces(result):
             if ( index == len(result) - 3 or index < len(result) - 3 and result[index+3].isspace()  ) and ( ( result[index+1].isspace() or result[index+1] == "-") and result[index+2].isalpha() ) :
                     result = result[:index+1] + result[index+2:]   
                     removed += 1
-                    result = result[:index] + result[index+1] + result[index] + result[index+2:]  # 8c -> c8
+                    result = result[:index] + result[index+1] + result[index] + result[index+2:] 
+            if char.isdigit() and index+1 < len(result) and (nextChar := result[index+1]).isalpha():
+                result = result[:index] + nextChar + char + result[index+2:] 
  
+        
     return result
 
 
@@ -62,7 +65,7 @@ def extractKeyWords(results, board, recognizer, savedMatchings = []):
     
     for result in results['alternative']:
 
-        result = string_NumbersToNumbers(result['transcript'])
+        result = stringNumbersToNumbers(result['transcript'])
         result = cutSpaces(result)
 
         startPos = ''
@@ -226,7 +229,7 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece, rec
             return result_pos
             
         else:
-            speak("Przepraszam, nie zrozumiałem ruchu. Spróbuj jeszcze raz.")
+            # speak("Przepraszam, nie zrozumiałem ruchu. Spróbuj jeszcze raz.")
             return extractKeyWords( recognizeSpeech(recognizer), board, recognizer )
 
 # 
