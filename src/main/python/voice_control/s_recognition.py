@@ -30,7 +30,6 @@ def cutSpaces(result):
 
 
 def extractKeyWords(results, board, recognizer, savedMatchings = []): 
-    print(results, "s_reco/extractKeyWords")
     if not results or not results['alternative']:
         return None
 
@@ -83,7 +82,6 @@ def extractKeyWords(results, board, recognizer, savedMatchings = []):
                 elif not endPos :
                     positionsInterpreted = 2
                     endPos = word  
-                print(word, startPos, endPos, "word")
 
         if startPos and endPos:
             positions = startPos + ' ' + endPos
@@ -109,7 +107,6 @@ def extractKeyWords(results, board, recognizer, savedMatchings = []):
     elif matchings["król"] > 0 or matchings["króla"] > 0:
         piece = King(Color.WHITE)
 
-    print(positionsInterpreted, "pos")
     return analyzeKeyWords(matchings, board, positionsInterpreted, positions, piece, recognizer)
         
 
@@ -120,7 +117,6 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece, rec
         
         for i in range(2):
             lastMove = board.movesHistory.pop()
-            print(lastMove)
             board.undo_move(lastMove[0], lastMove[1], lastMove[2])
             if len(lastMove) > 3:
                 board.white_king_made_move = False
@@ -217,12 +213,10 @@ def analyzeKeyWords(matchings, board, positionsInterpreted,positions, piece, rec
 
 #
     if positionsInterpreted == 1:   # ruch na tą pozycję, ewentualnie danego pionka
-        print("x")
         speak(positions)
         moves = GameRules.available_moves(piece, positions, board)
         if len(moves) == 1:
             result_pos = GameRules.parse_tuple_position(moves[0]) + ' ' + positions
-            print(result_pos)
             return result_pos
             
         else:
@@ -266,7 +260,6 @@ class CustomRecognizer(sr.Recognizer):
 def recognizeSpeech(recognizer):
     if recognizer is None:
         recognizer = CustomRecognizer()
-    print(sr.Microphone())
     with sr.Microphone() as source:
         recognizer.adjust_for_ambient_noise(source)
         print("Say something!")

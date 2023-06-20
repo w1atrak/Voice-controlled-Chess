@@ -2,7 +2,11 @@
 
 Projekt szachów sterowanych głosowo, stworzony w trakcie zajęć programowania w języku Python na AGH. 
 
-
+# Rozpoznawane frazy (między innymi):
+* pozycja_startowa pozycja_docelowa
+* [pion] pozycja_docelowa
+* cofnij
+* roszada [krótka / długa]
 
 # Wymagania
 Aby uruchomić ten projekt, wymagane są następujące zależności:

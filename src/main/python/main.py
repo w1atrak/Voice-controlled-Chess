@@ -92,8 +92,8 @@ def getBoardValue(board):
 
 
 def main():
-    board = Board(True, 'prom.json')
-    board = Board(True, 'castlings.json')
+    # board = Board(True, 'prom.json')
+    # board = Board(True, 'castlings.json')
     board = Board(False, '')
     player1 = Player(Color.WHITE)
     player2 = SimpleAIPlayer(Color.BLACK)

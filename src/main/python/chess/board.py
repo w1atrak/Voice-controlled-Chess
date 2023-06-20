@@ -112,8 +112,6 @@ class Board:
         lastMove = self.movesHistory[-1]
         startPos = lastMove[0] 
         endPos = lastMove[1]
-        print(self.movesHistory)
-        print(lastMove)
         if isinstance(self.get_piece(endPos), King):
             if endPos == (7,6) and startPos == (7,4):
                 player.make_move(self, ((7,7),(7,5)))

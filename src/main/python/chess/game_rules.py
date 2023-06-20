@@ -36,12 +36,7 @@ class GameRules:
         rightBlackCastlingPossible = not board.black_king_made_move and ( not board.right_black_rook_made_move and GameRules.is_path_clear((0,5),(0,6),board) )
         leftBlackCastlingPossible =  not board.black_king_made_move and ( not board.left_black_rook_made_move and GameRules.is_path_clear((0,3),(0,1),board) )
         
-        print()
-        print(GameRules.is_path_clear((7,5),(7,6),board))
         board.display()
-        print(board.white_king_made_move)
-        print(board.right_white_rook_made_move)
-        print()
 
         if rightWhiteCastlingPossible:
             res.append("rightWhite")
@@ -87,7 +82,6 @@ class GameRules:
     
     @staticmethod
     def is_path_clear(start_position, end_position, board):
-        print(start_position, end_position)
         start_row, start_col = start_position
         end_row, end_col = end_position
         row_diff = end_row - start_row
